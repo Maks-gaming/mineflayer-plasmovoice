@@ -1,0 +1,28 @@
+name: mineflayer-plasmovoice
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        with:
+          node-version: 16
+      - run: npm i
+
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+      - run: npm i
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
