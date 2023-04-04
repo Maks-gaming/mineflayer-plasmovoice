@@ -1,5 +1,9 @@
 {
-  "name": "mineflayer-plasmovoice",
+  "name": "@maks-gaming/mineflayer-plasmovoice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Maks-gaming/mineflayer-plasmovoice.git"
+  },
   "version": "1.0.0",
   "description": "Makes it possible to use PlasmoVoice using channels for plugins",
   "main": "lib/index.js",
