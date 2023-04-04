@@ -1,6 +1,8 @@
 <h1 align="center">mineflayer-plasmovoice</h1>
 <p align="center"><i>A lightweight plugin for Mineflayer that allows use VoiceChat for PlasmoVoice plugin.</i></p>
 
+[![build](https://github.com/Maks-gaming/mineflayer-plasmovoice/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/Maks-gaming/mineflayer-plasmovoice/actions/workflows/main.yml)
+
 ---
 
 ### Getting Started
