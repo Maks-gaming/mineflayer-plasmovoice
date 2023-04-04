@@ -12,7 +12,7 @@ npm install mineflayer-plasmovoice
 
 **Required** to have these packets:
 
-* [**ffmpeg**](/Maks-gaming/mineflayer-plasmovoice/)
+* [**ffmpeg**](https://ffmpeg.org/)
 
 ### Simple Bot
 
