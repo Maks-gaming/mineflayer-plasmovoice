@@ -58,10 +58,7 @@ export class VoicePackets {
 
     private udp_addr : string | undefined;
     private udp_port : number | undefined;
-    public sample_rate : number = -1;
-    private frameSize : number = -1;
     private udp_client = dgram.createSocket('udp4');
-    private opus_encoder : OpusEncoder = new OpusEncoder(1920, 1);
 
     private sendUdpPacket(packet: Buffer) {
         this.udp_client.send(packet, 0, packet.length, this.udp_port, this.udp_addr, (err) => {
@@ -69,13 +66,9 @@ export class VoicePackets {
         })
     }
 
-    async wakeUDP(host: string, port: number, sample_rate: number) {
+    async wakeUDP(host: string, port: number, sample_rate: number = 48000) {
         this.udp_addr = host;
         this.udp_port = port;
-        
-        this.sample_rate = sample_rate;
-        this.opus_encoder = new OpusEncoder(this.sample_rate, 1);
-        this.frameSize = (this.sample_rate / 1000) * 2 * 20;
 
         process.on('SIGINT', () => {
             this.udp_client.close(() => {
@@ -89,14 +82,17 @@ export class VoicePackets {
     private voiceEndPacketEncoder = new SchemaEncoder(schemas.voiceEndPacket);
 
     // TODO - fix audio lags
-    async SendPCM(pcmBuffer: Buffer, distance: number = 16) {
+    async SendPCM(pcmBuffer: Buffer, distance: number = 16, sample_rate: number = 48000) {
+        var opus_encoder = new OpusEncoder(sample_rate, 1);
+        var frameSize = (sample_rate / 1000) * 2 * 20;
+
         if (!this.udp_addr || !this.udp_port) {
             throw new Error("Connection is not established");
         }
 
         const frames = [];
-        for (let i = 0; i < pcmBuffer.length; i += this.frameSize) {
-            const frame = pcmBuffer.slice(i, i + this.frameSize);
+        for (let i = 0; i < pcmBuffer.length; i += frameSize) {
+            const frame = pcmBuffer.slice(i, i + frameSize);
             frames.push(frame);
         }
 
@@ -105,11 +101,11 @@ export class VoicePackets {
         let seq_num: number = 0;
         for (let i = 0; i < frames.length; i++) {
             const frame = frames[i];
-            if (frame.length !== this.frameSize) {
+            if (frame.length !== frameSize) {
                 return;
             }
-
-            const opus = this.opus_encoder.encode(frame);
+            
+            const opus = opus_encoder.encode(frame);
             opusLength.writeInt32BE(opus.length, 1);
 
             const packetData: any = {

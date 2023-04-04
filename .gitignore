@@ -68,6 +68,9 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
+# admin is playing
+*.mp3
+
 # bat files
 *.bat
 

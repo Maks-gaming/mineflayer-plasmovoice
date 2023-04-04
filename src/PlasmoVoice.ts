@@ -13,7 +13,7 @@ export class PlasmoVoice {
     // System variables
     private readonly bot: Bot;
     private voicePackets: VoicePackets;
-    private KGz: number = -1; // 48000 KGz by default
+    private KGz: number = 48000; // 48000 KGz by default
 
     // Class initialization
     constructor(bot: Bot)
@@ -45,7 +45,7 @@ export class PlasmoVoice {
                         var data: any = packetDecoder.decode(packetCursoredBuffer);
 
                         this.voicePackets.ClientConnectPacket(data["token"]);
-                        this.voicePackets.wakeUDP(data["host"], data["port"], this.KGz);
+                        this.voicePackets.wakeUDP(data["host"], data["port"]);
                         this.voicePackets.AuthPacketUDP(data["token"]);
 
                     } else if (voicePacketType == 5) {
@@ -56,6 +56,8 @@ export class PlasmoVoice {
                         var data: any = packetDecoder.decode(packetCursoredBuffer);
 
                         this.KGz = data["sample_rate"]
+                        
+                        console.log("[plasmovoice] Recieved server-config")
                     }
                 }
             }
@@ -63,19 +65,27 @@ export class PlasmoVoice {
     }
 
     // Functions
-    async SendPCM(file: string, distance: number = 16) {
-        this.voicePackets.SendPCM(fs.readFileSync(file), distance);
+    async SendPCM(file: string, distance: number = 16, sample_rate: number = this.KGz) {
+        if (this.KGz < 0) {
+            throw new Error("Config packet still not recieved");
+        }
+
+        this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
     }
 
-    async SendAudio(file: string, distance: number = 16) {
+    async SendAudio(file: string, distance: number = 16, sample_rate: number = this.KGz) {
+
+        if (this.KGz < 0) {
+            throw new Error("Config packet still not recieved");
+        }
 
         if (!fs.existsSync(file)) {
             throw new Error("File not found");
         }
 
-        var ffmpeg = convert_audio_to_pcm(file, this.KGz);
+        var ffmpeg = convert_audio_to_pcm(file, sample_rate);
         ffmpeg.on('close', (code) => {
-            this.SendPCM("output.pcm", distance);
+            this.SendPCM("output.pcm", distance, sample_rate);
         });
     }
 }
