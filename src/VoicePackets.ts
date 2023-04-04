@@ -85,7 +85,7 @@ export class VoicePackets {
 
         process.on('SIGINT', () => {
             this.udp_client.close(() => {
-                console.log('UDP socket closed');
+                console.log('[plasmovoice] socket closed');
             });
         });
     }
