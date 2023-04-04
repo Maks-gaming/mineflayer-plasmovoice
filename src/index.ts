@@ -12,6 +12,3 @@ declare module "mineflayer" {
         plasmovoice: PlasmoVoice;
     }
 }
-
-//export * from './Cooldown';
-//export * from './TimingSolver';

@@ -15,12 +15,6 @@ export class VoicePackets {
     // System variables
     private readonly bot: Bot;
 
-    // @ts-ignore TEMP
-    private token: string = "";
-
-    // Required
-    modVersion?: string = "1.2.19";
-
     // Class initialization
     constructor(bot: Bot)
     {
@@ -75,7 +69,7 @@ export class VoicePackets {
         })
     }
 
-    async wakeUDP(host: string, port: number, sample_rate: number = 48000) {
+    async wakeUDP(host: string, port: number, sample_rate: number) {
         this.udp_addr = host;
         this.udp_port = port;
         
@@ -147,7 +141,6 @@ export class VoicePackets {
     }
 
     async AuthPacketUDP(token: string) {
-        this.token = token;
 
         var rawPacket = {
             packet_type: 2,

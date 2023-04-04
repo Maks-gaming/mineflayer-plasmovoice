@@ -34,6 +34,9 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
+# compiled js
+lib
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
@@ -64,6 +67,9 @@ typings/
 
 # Output of 'npm pack'
 *.tgz
+
+# bat files
+*.bat
 
 # Yarn Integrity file
 .yarn-integrity
