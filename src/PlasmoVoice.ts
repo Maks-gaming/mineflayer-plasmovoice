@@ -13,7 +13,7 @@ export class PlasmoVoice {
     // System variables
     private readonly bot: Bot;
     private voicePackets: VoicePackets;
-    private KGz: number = 48000; // 48000 KGz by default
+    private sample_rate: number = -1; // 48000 KHz by default
 
     // Class initialization
     constructor(bot: Bot)
@@ -55,7 +55,7 @@ export class PlasmoVoice {
                         var packetDecoder = new SchemaDecoder(schemas.configPacket);
                         var data: any = packetDecoder.decode(packetCursoredBuffer);
 
-                        this.KGz = data["sample_rate"]
+                        this.sample_rate = data["sample_rate"]
                         
                         console.log("[plasmovoice] Recieved server-config")
                     }
@@ -65,17 +65,17 @@ export class PlasmoVoice {
     }
 
     // Functions
-    async SendPCM(file: string, distance: number = 16, sample_rate: number = this.KGz) {
-        if (this.KGz < 0) {
+    async SendPCM(file: string, distance: number = 16, sample_rate: number = this.sample_rate) {
+        if (this.sample_rate < 0) {
             throw new Error("Config packet still not recieved");
         }
 
         this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
     }
 
-    async SendAudio(file: string, distance: number = 16, sample_rate: number = this.KGz) {
+    async SendAudio(file: string, distance: number = 16, sample_rate: number = this.sample_rate) {
 
-        if (this.KGz < 0) {
+        if (this.sample_rate < 0) {
             throw new Error("Config packet still not recieved");
         }
 

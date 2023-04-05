@@ -82,7 +82,7 @@ export class VoicePackets {
     private voiceEndPacketEncoder = new SchemaEncoder(schemas.voiceEndPacket);
 
     // TODO - fix audio lags
-    async SendPCM(pcmBuffer: Buffer, distance: number = 16, sample_rate: number = 48000) {
+    async SendPCM(pcmBuffer: Buffer, distance: number = 16, sample_rate: number) {
         var opus_encoder = new OpusEncoder(sample_rate, 1);
         var frameSize = (sample_rate / 1000) * 2 * 20;
 
