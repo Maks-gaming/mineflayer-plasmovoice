@@ -2,7 +2,7 @@
   "name": "mineflayer-plasmovoice",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Maks-gaming/mineflayer-plasmovoice.git"
+    "url": "git+https://github.com/Maks-gaming/mineflayer-plasmovoice.git"
   },
   "version": "1.0.0",
   "description": "Makes it possible to use PlasmoVoice using channels for plugins",
@@ -15,15 +15,17 @@
   },
   "keywords": [
     "mineflayer",
-    "plugin",
-    "template"
+    "plugin"
   ],
+  "bugs": {
+    "url": "https://github.com/Maks-gaming/mineflayer-plasmovoice/issues"
+  },
+  "homepage": "https://github.com/Maks-gaming/mineflayer-plasmovoice",
   "author": "Maksim Klimenko & Anatoliy Raev",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
-    "mineflayer": "^4.8.1",
-    "mineflayer-plasmovoice": "file:"
+    "mineflayer": "^4.8.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
