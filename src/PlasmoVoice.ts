@@ -65,7 +65,7 @@ export class PlasmoVoice {
     }
 
     // Functions
-    async SendPCM(file: string, distance: number = 16, sample_rate: number = this.sample_rate) {
+    async SendPCM(file: string, distance: number, sample_rate: number = this.sample_rate) {
         if (this.sample_rate < 0) {
             throw new Error("Config packet still not recieved");
         }
@@ -73,7 +73,7 @@ export class PlasmoVoice {
         this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
     }
 
-    async SendAudio(file: string, distance: number = 16, sample_rate: number = this.sample_rate) {
+    async SendAudio(file: string, distance: number, sample_rate: number = this.sample_rate) {
 
         if (this.sample_rate < 0) {
             throw new Error("Config packet still not recieved");
