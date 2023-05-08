@@ -30,7 +30,7 @@ function isWindowsInstalled(program: string) {
     return success
 }
 
-export default function convert_audio_to_pcm(name: string, ar: number = 48000) {
+export default function convert_audio_to_pcm(name: string, ar: number) {
     if (!(isUnixInstalled("ffmpeg") || isWindowsInstalled("ffmpeg"))) {
         throw new Error("FFmpeg is not installed")
     }

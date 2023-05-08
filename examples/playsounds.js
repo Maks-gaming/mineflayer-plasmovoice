@@ -10,8 +10,11 @@ bot.loadPlugin(plasmo.plugin)
 bot.on("voicechat_connected", () => {
     bot.setControlState("sneak", true)
 
-    // Path to file with any audio format
+    // Play any sound file
     bot.plasmovoice.SendAudio("music.mp3")
+
+    // Play RAW-PCM format
+    bot.plasmovoice.SendPCM("codec.pcm")
 })
 
 bot.on("voicechat_audio_end", () => {

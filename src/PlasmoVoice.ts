@@ -57,7 +57,7 @@ export class PlasmoVoice {
 
                         this.sample_rate = data["sample_rate"]
                         
-                        console.log("[plasmovoice] Recieved server-config")
+                        console.log(`[plasmovoice] Recieved sample rate - ${this.sample_rate} Hz`)
                     }
                 }
             }
