@@ -77,6 +77,13 @@ export class VoicePackets {
         });
     }
 
+    async stopSending() {
+        this.breaker = true
+        await new Promise(r => setTimeout(r, 500));
+        this.breaker = false
+    }
+    
+    private breaker : boolean = false;
     private PACKET_TIMEOUT_MS : number = 7;
     private voicePacketEncoder = new SchemaEncoder(schemas.voicePacket);
     private voiceEndPacketEncoder = new SchemaEncoder(schemas.voiceEndPacket);
@@ -117,7 +124,9 @@ export class VoicePackets {
             this.sendUdpPacket(packet);
 
             seq_num += 1;
-            if (i === frames.length - 2) {
+            await new Promise(r => setTimeout(r, this.PACKET_TIMEOUT_MS));
+
+            if (i === frames.length - 2 || this.breaker == true) {
                 
                 const packetDataEnd: any = {
                     'packet_type': 4,
@@ -128,11 +137,11 @@ export class VoicePackets {
 
                 // @ts-expect-error
                 this.bot.emit("voicechat_audio_end");
+                this.breaker = false;
 
+                break;
                 return;
             }
-
-            await new Promise(r => setTimeout(r, this.PACKET_TIMEOUT_MS));
         }
     }
 

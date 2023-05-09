@@ -73,6 +73,10 @@ export class PlasmoVoice {
         this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
     }
 
+    async Stop() {
+        this.voicePackets.stopSending();
+    }
+
     async SendAudio(file: string, distance: number, sample_rate: number = this.sample_rate) {
 
         if (this.sample_rate < 0) {
