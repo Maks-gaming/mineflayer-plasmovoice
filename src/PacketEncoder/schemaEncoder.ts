@@ -11,15 +11,15 @@ export default class SchemaEncoder {
 
     encode(data: any) {
         let cursored_buffer = new CursoredBuffer(Buffer.alloc(1000000), null)
-        
         for (const [key, value] of Object.entries(this.schema)) {
-            let method_name : string = typeNameToMethod[value].slice(0, key.indexOf("["));
-            let method = (cursored_buffer as any)['write' + method_name]
-            if (key.includes("[")) {
-                let parsed_value : number = Number(key.slice(key.indexOf("["), key.indexOf("]")))
-                method(data[key], parsed_value)
+            if (value.includes("[")) {
+                let method_name : string = value.slice(0, value.indexOf("["));
+                method_name = typeNameToMethod[method_name]
+                let parsed_value : number = parseInt(value.slice(value.indexOf("[") + 1, value.indexOf("]")));
+                (cursored_buffer as any)['write' + method_name](data[key], parsed_value)
             }  else {
-                method(data[key])
+                let method_name : string = typeNameToMethod[value];
+                (cursored_buffer as any)['write' + method_name](data[key])
             }
         }
         return cursored_buffer.buffer.subarray(0, cursored_buffer._offset)

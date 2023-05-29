@@ -9,7 +9,7 @@ export class PlasmoVoice {
 
     // System variables
     private readonly bot: Bot;
-    public version = "1.2.19";
+    public version = "2.0.3";
     private packetSender: any = undefined;
 
     // Class initialization
@@ -17,16 +17,15 @@ export class PlasmoVoice {
     {
         this.bot = bot;
 
-        // Initializing on spawn
-        this.bot.on("login", async () => {
+        bot.on("login", () => {
             if (this.version.split('.')[0] == "2") {
                 // Plasmo-voice 2.X.X
                 this.packetSender = new PacketSenderVersion2(this.bot);
-                await this.packetSender.Initialize();
+                this.packetSender.Initialize();
             } else if (this.version.split('.')[0] == "1") {
                 // Plasmo-voice 1.X.X
                 this.packetSender = new PacketSenderVersion1(this.bot);
-                await this.packetSender.Initialize();
+                this.packetSender.Initialize();
             } else {
                 throw new Error("Unknown version of PlasmoVoice");
             }

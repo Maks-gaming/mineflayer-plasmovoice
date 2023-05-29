@@ -74,6 +74,7 @@ export default class CursoredBuffer {
     writeByte(bytes: Buffer, length: number = 1) {
         this.buffer = Buffer.concat([this.buffer, bytes])
         this._offset += length
+        console.log("!!"+this._offset)
     }
 
     readBoolean() {

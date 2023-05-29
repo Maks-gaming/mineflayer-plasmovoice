@@ -6,5 +6,5 @@ export const typeNameToMethod: Record<string, string> = {
     'i16': 'Int16',
     'i64': 'Int64',
     'boolean': 'Boolean',
-    'byte': 'Byte'
+    'bytes': 'Byte'
 }
