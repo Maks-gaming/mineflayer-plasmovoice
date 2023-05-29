@@ -45,7 +45,7 @@ export class PlasmoVoiceSchemas2 {
         'packet_type': 'u8',
         'minecraftVersion': 'string',
         'version': 'string',
-        'publicKey': '????',
+        'publicKey': 'bytes[256]',
         'voiceDisabled': 'boolean',
         'microphoneDisabled': 'boolean'
     }

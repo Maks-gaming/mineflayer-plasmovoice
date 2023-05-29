@@ -66,6 +66,16 @@ export default class CursoredBuffer {
         return this.#writeToBuffer(this.buffer.writeInt16BE, value, 2)
     }
 
+    readByte(length: number = 1) {
+        this._offset += length
+        return this.buffer.subarray(this._offset, this._offset + length)
+    }
+    
+    writeByte(bytes: Buffer, length: number = 1) {
+        this.buffer = Buffer.concat([this.buffer, bytes])
+        this._offset += length
+    }
+
     readBoolean() {
         // this is not best implementation, but i think its "good enough" 
         return Boolean(this.readUInt8())
