@@ -1,85 +1,54 @@
 import { Bot } from "mineflayer";
-import { VoicePackets } from "./VoicePackets";
-import CursoredBuffer from "./packetsUtils/cursoredBuffer";
-import SchemaDecoder from "./packetsUtils/schemaDecoder";
-import * as schemas from './packetsUtils/schemas' ;
-
-import convert_audio_to_pcm from "./ShellModule";
+import PacketSenderVersion1 from "./PacketSenderVersion1";
+import PacketSenderVersion2 from "./PacketSenderVersion2";
 
 import fs from "fs";
+import convert_audio_to_pcm from "./ShellModule";
 
 export class PlasmoVoice {
 
     // System variables
     private readonly bot: Bot;
-    private voicePackets: VoicePackets;
-    private sample_rate: number = -1; // 48000 KHz by default
+    public version = "1.2.19";
+    private packetSender: any = undefined;
 
     // Class initialization
     constructor(bot: Bot)
     {
         this.bot = bot;
-        this.voicePackets = new VoicePackets(bot);
-        
-        // Packets worker
-        this.bot._client.on("login", () => {
-            this.voicePackets.ChannelRegistration();
-        })
 
-        this.bot._client.on("packet", (rawData, packetMeta) => {
-            if (packetMeta.name == "custom_payload") {
-                if (rawData.channel == "plasmo:voice") {
-                    var buffer = rawData.data;
-        
-                    // Getting packetHeader
-                    var packetHeaderCursoredBuffer = new CursoredBuffer(buffer, null);
-                    var packetHeaderDecoder = new SchemaDecoder(schemas.packetHeader);
-                    var packetHeader: any = packetHeaderDecoder.decode(packetHeaderCursoredBuffer);
-                    var voicePacketType: number = packetHeader["packet_type"];
-
-                    if (voicePacketType == 6) {
-
-                        // serverConnectPacket
-                        var packetCursoredBuffer = new CursoredBuffer(buffer, null);
-                        var packetDecoder = new SchemaDecoder(schemas.serverConnectPacket);
-                        var data: any = packetDecoder.decode(packetCursoredBuffer);
-
-                        this.voicePackets.ClientConnectPacket(data["token"]);
-                        this.voicePackets.wakeUDP(data["host"], data["port"]);
-                        this.voicePackets.AuthPacketUDP(data["token"]);
-
-                    } else if (voicePacketType == 5) {
-
-                        // configPacket
-                        var packetCursoredBuffer = new CursoredBuffer(buffer, null);
-                        var packetDecoder = new SchemaDecoder(schemas.configPacket);
-                        var data: any = packetDecoder.decode(packetCursoredBuffer);
-
-                        this.sample_rate = data["sample_rate"]
-                        
-                        console.log(`[plasmovoice] Recieved sample rate - ${this.sample_rate} Hz`)
-                    }
-                }
+        // Initializing on spawn
+        this.bot.on("login", async () => {
+            if (this.version.split('.')[0] == "2") {
+                // Plasmo-voice 2.X.X
+                this.packetSender = new PacketSenderVersion2(this.bot);
+                await this.packetSender.Initialize();
+            } else if (this.version.split('.')[0] == "1") {
+                // Plasmo-voice 1.X.X
+                this.packetSender = new PacketSenderVersion1(this.bot);
+                await this.packetSender.Initialize();
+            } else {
+                throw new Error("Unknown version of PlasmoVoice");
             }
         })
     }
 
     // Functions
-    async SendPCM(file: string, distance: number, sample_rate: number = this.sample_rate) {
-        if (this.sample_rate < 0) {
+    async SendPCM(file: string, distance: number) {
+        if (this.packetSender.sample_rate < 0) { // TODO + and this.packetSender2.sample_rate < 0
             throw new Error("Config packet still not recieved");
         }
 
-        this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
+        this.packetSender.SendPCM(fs.readFileSync(file), distance);
     }
 
     async Stop() {
-        this.voicePackets.stopSending();
+        this.packetSender.stopSending();
     }
 
-    async SendAudio(file: string, distance: number, sample_rate: number = this.sample_rate) {
+    async SendAudio(file: string, distance: number) {
 
-        if (this.sample_rate < 0) {
+        if (this.packetSender.sample_rate < 0) { // TODO + and this.packetSender2.sample_rate < 0
             throw new Error("Config packet still not recieved");
         }
 
@@ -87,9 +56,9 @@ export class PlasmoVoice {
             throw new Error("File not found");
         }
 
-        var ffmpeg = convert_audio_to_pcm(file, sample_rate);
+        var ffmpeg = convert_audio_to_pcm(file, this.packetSender.sample_rate);
         ffmpeg.on('close', (code) => {
-            this.SendPCM("output.pcm", distance, sample_rate);
+            this.SendPCM("output.pcm", distance);
         });
     }
 }
