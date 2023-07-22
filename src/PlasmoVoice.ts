@@ -82,12 +82,12 @@ export default class PlasmoVoice {
         })
     }
 
-    async sendAudio(file: string) {
+    async sendAudio(file: string, speed: number = 1.0) {
         if (!fs.existsSync(file)) {
             throw new Error("File not found");
         }
 
-        var ffmpeg = VoiceRecoder.convert_audio_to_pcm(file, PacketManager.configPacketData.captureInfo.sampleRate);
+        var ffmpeg = VoiceRecoder.convert_audio_to_pcm(file, PacketManager.configPacketData.captureInfo.sampleRate, speed);
         ffmpeg.on('close', (code) => {
             this.sendPCM("output.pcm");
         });

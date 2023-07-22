@@ -31,7 +31,7 @@ export default class VoiceRecoder {
         return success
     }
 
-    static convert_audio_to_pcm(name: string, ar: number) {
+    static convert_audio_to_pcm(name: string, ar: number, speed: number = 1.0) {
         if (!(this.isUnixInstalled("ffmpeg") || this.isWindowsInstalled("ffmpeg"))) {
             throw new Error("FFmpeg is not installed")
         }
@@ -40,6 +40,7 @@ export default class VoiceRecoder {
             '-i', name,
             '-acodec', 'pcm_s16le',
             '-f', 's16le',
+            '-filter:a', `atempo=${speed}`,
             '-ac', '1',
             '-ar', '' + ar,
             'output.pcm'
