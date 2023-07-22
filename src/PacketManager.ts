@@ -1,12 +1,11 @@
 // Libraries
 import crypto from "crypto";
 import { ProtoDef } from "protodef";
+import fs from "fs";
 
 // Types
 import { Bot } from "mineflayer";
 import { Client } from "minecraft-protocol";
-import protocol from "../src/protocolData/plasmovoice_protocol.json";
-
 const UDP_MAGIC_NUMBER: number = 1318061289;
 
 export default class PacketManager {
@@ -18,6 +17,9 @@ export default class PacketManager {
     static configPacketData: ConfigPacket;
 
     static async init(bot: Bot) {
+
+        let protocol: any = fs.readFileSync(__dirname + "/../src/protocolData/plasmovoice_protocol.json".replace("/", "\\"), { encoding: 'utf8', flag: 'r' });
+        protocol = JSON.parse(protocol);
 
         // Add types to ProtoDef
         this.protoDef.addProtocol(protocol, ["login", "toClient"]);
