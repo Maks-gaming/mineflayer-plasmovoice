@@ -1,95 +1,99 @@
-import { Bot } from "mineflayer";
-import { VoicePackets } from "./VoicePackets";
-import CursoredBuffer from "./packetsUtils/cursoredBuffer";
-import SchemaDecoder from "./packetsUtils/schemaDecoder";
-import * as schemas from './packetsUtils/schemas' ;
-
-import convert_audio_to_pcm from "./ShellModule";
-
+// Libraries
+import VoiceServer from "./VoiceServer";
+import PacketManager from "./PacketManager";
 import fs from "fs";
 
-export class PlasmoVoice {
+// Types
+import { Bot } from "mineflayer";
+import VoiceRecoder from "./VoiceRecoder";
+
+export default class PlasmoVoice {
 
     // System variables
-    private readonly bot: Bot;
-    private voicePackets: VoicePackets;
-    private sample_rate: number = -1; // 48000 KHz by default
+    public readonly bot: Bot;
 
     // Class initialization
-    constructor(bot: Bot)
-    {
+    constructor(bot: Bot) {
         this.bot = bot;
-        this.voicePackets = new VoicePackets(bot);
-        
-        // Packets worker
-        this.bot._client.on("login", () => {
-            this.voicePackets.ChannelRegistration();
-        })
 
-        this.bot._client.on("packet", (rawData, packetMeta) => {
-            if (packetMeta.name == "custom_payload") {
-                if (rawData.channel == "plasmo:voice") {
-                    var buffer = rawData.data;
-        
-                    // Getting packetHeader
-                    var packetHeaderCursoredBuffer = new CursoredBuffer(buffer, null);
-                    var packetHeaderDecoder = new SchemaDecoder(schemas.packetHeader);
-                    var packetHeader: any = packetHeaderDecoder.decode(packetHeaderCursoredBuffer);
-                    var voicePacketType: number = packetHeader["packet_type"];
+        if (!bot) { return; }
 
-                    if (voicePacketType == 6) {
+        // Initialize packet manager
+        PacketManager.init(this.bot);
+        // Initialize voice server
+        VoiceServer.init(this.bot);
 
-                        // serverConnectPacket
-                        var packetCursoredBuffer = new CursoredBuffer(buffer, null);
-                        var packetDecoder = new SchemaDecoder(schemas.serverConnectPacket);
-                        var data: any = packetDecoder.decode(packetCursoredBuffer);
+        // Listen plugin channels
+        this.bot._client.on("plasmo:voice/v2", async (packet) => {
+            if (!packet) { return; }
 
-                        this.voicePackets.ClientConnectPacket(data["token"]);
-                        this.voicePackets.wakeUDP(data["host"], data["port"]);
-                        this.voicePackets.AuthPacketUDP(data["token"]);
+            //console.log(packet.id)
 
-                    } else if (voicePacketType == 5) {
-
-                        // configPacket
-                        var packetCursoredBuffer = new CursoredBuffer(buffer, null);
-                        var packetDecoder = new SchemaDecoder(schemas.configPacket);
-                        var data: any = packetDecoder.decode(packetCursoredBuffer);
-
-                        this.sample_rate = data["sample_rate"]
-                        
-                        console.log(`[plasmovoice] Recieved sample rate - ${this.sample_rate} Hz`)
+            if (packet.id == 'PlayerInfoRequestPacket') {
+                // PlayerInfoPacket
+                this.bot._client.writeChannel("plasmo:voice/v2",
+                    {
+                        "id": "PlayerInfoPacket",
+                        "data": {
+                            voiceDisabled: false,
+                            microphoneMuted: false,
+                            minecraftVersion: "1.19.4",
+                            version: "2.0.3",
+                            publicKey: PacketManager.publicKey
+                        }
                     }
+                );
+                return;
+            } else if (packet.id == 'ConnectionPacket') {
+                // Save data & create voice server
+                if (packet["data"]["secret"] && packet["data"]["port"] && packet["data"]["ip"]) {
+                    await VoiceServer.connect(packet["data"]["ip"], packet["data"]["port"], packet["data"]["secret"]);
+                } else {
+                    throw new Error("ConnectionPacket is invalid");
                 }
+                return;
+            } else if (packet.id == 'ConfigPacket') {
+                // Save data from this packet
+                PacketManager.configPacketData = packet["data"];
+                PacketManager.aesKey = await PacketManager.getAESKey();
+
+                // Check for correct encryption
+                if (packet["data"]["hasEncryptionInfo"] == false) {
+                    throw new Error(`Encryption is disabled`);
+                } else if (packet["data"]["encryptionInfo"]["algorithm"] != "AES/CBC/PKCS5Padding") {
+                    throw new Error(`Unsupported encryption type "${packet["data"]["encryptionInfo"]["algorithm"]}"`);
+                }
+
+                // LanguageRequestPacket
+                this.bot._client.writeChannel("plasmo:voice/v2",
+                    {
+                        "id": "LanguageRequestPacket",
+                        "data": {
+                            language: "en_US"
+                        }
+                    }
+                ); 
+
+                // @ts-expect-error
+                this.bot.emit("plasmovoice_connected");
+                
+                return;
             }
         })
     }
 
-    // Functions
-    async SendPCM(file: string, distance: number, sample_rate: number = this.sample_rate) {
-        if (this.sample_rate < 0) {
-            throw new Error("Config packet still not recieved");
-        }
-
-        this.voicePackets.SendPCM(fs.readFileSync(file), distance, sample_rate);
-    }
-
-    async Stop() {
-        this.voicePackets.stopSending();
-    }
-
-    async SendAudio(file: string, distance: number, sample_rate: number = this.sample_rate) {
-
-        if (this.sample_rate < 0) {
-            throw new Error("Config packet still not recieved");
-        }
-
+    async sendAudio(file: string) {
         if (!fs.existsSync(file)) {
             throw new Error("File not found");
         }
 
-        var ffmpeg = convert_audio_to_pcm(file, sample_rate);
+        var ffmpeg = VoiceRecoder.convert_audio_to_pcm(file, PacketManager.configPacketData.captureInfo.sampleRate);
         ffmpeg.on('close', (code) => {
-            this.SendPCM("output.pcm", distance, sample_rate);
+            this.sendPCM("output.pcm");
         });
+    }
+
+    async sendPCM(file: string) {
+        VoiceServer.sendPCM(fs.readFileSync(file));
     }
 }
