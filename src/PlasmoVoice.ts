@@ -111,7 +111,9 @@ export default class PlasmoVoice {
             } else if (packet.id == 'SelfAudioInfoPacket') {
                 //return;
             } else if (packet.id == 'SourceInfoPacket') {
-                /*const request = Utils.findPlayerBySourceId(packet.data.sourceId);
+                /* TODO: Player Listening
+                
+                const request = Utils.findPlayerBySourceId(packet.data.sourceId);
                 
                 Utils.debug(Utils.uuidBytesToString(packet.data.sourceId));
                 if (request != undefined) {

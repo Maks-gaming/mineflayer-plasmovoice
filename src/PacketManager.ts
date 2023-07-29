@@ -18,7 +18,7 @@ export default class PacketManager {
 
     static configPacketData: ConfigPacket;
     static players: VoicePlayerInfo[];
-    static sourceById: {sourceId: UUID, playerId: UUID | null}[] = [];
+    static sourceById: {sourceId: UUID, playerId: UUID | null}[] = []; // Unused (soon)
 
     static async init(bot: Bot) {
 
@@ -58,8 +58,10 @@ export default class PacketManager {
 
     // Register channels
     private static async registerPlasmoChannels(client: Client) {
-        client.registerChannel("plasmo:voice/v2/installed", undefined, true); // TODO: Channel types & catch data
-        client.registerChannel("plasmo:voice/v2/service", undefined, true); // TODO: Channel types & catch data
+        // This is just flag-channels, no types
+        client.registerChannel("plasmo:voice/v2/installed", undefined, true);
+        client.registerChannel("plasmo:voice/v2/service", undefined, true);
+        
         client.registerChannel("plasmo:voice/v2", this.protoDef.types.plasmovoice_packet, true);
     }
 
@@ -87,7 +89,7 @@ export default class PacketManager {
     // we should probably add support for multiple algorithms (c) cralix
 
     static async getAESKey() {
-        if (!this.configPacketData) { throw new Error("ConfigPacket not recieved!"); }
+        if (!this.configPacketData) { throw new Error("ConfigPacket is not recieved!"); }
 
         const decrypted = crypto.privateDecrypt(
             { 
@@ -106,8 +108,9 @@ export default class PacketManager {
         return Buffer.concat([iv, encrypted]);
     }
 
+    // Unused
     static async decryptVoice(encrypted: Buffer): Promise<Buffer> {
-        if (!this.configPacketData) { throw new Error("ConfigPacket not recieved!"); }
+        if (!this.configPacketData) { throw new Error("ConfigPacket is not recieved!"); }
 
         const iv = encrypted.slice(0, 16);
         const data = encrypted.slice(16);

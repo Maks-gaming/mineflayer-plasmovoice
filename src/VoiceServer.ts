@@ -21,12 +21,13 @@ export default class VoiceServer {
         this.bot = bot
         this.udpClient = dgram.createSocket('udp4');
 
-        this.udpClient.on("error", (err) => { throw new Error(`Failed to connect to UDP server: ${err}`) });
+        this.udpClient.on("error", (err) => { throw new Error(`Failed to connect to UDP server: ${err}`); });
+        this.udpClient.on("close", () => { Utils.debug("UDP Connection closed"); })
         this.udpClient.on("message", this.handler.bind(this));
     }
 
     // UDP Message handler
-    private static async handler(msg: Buffer, rinfo: dgram.RemoteInfo) {
+    private static async handler(msg: Buffer, _: dgram.RemoteInfo) {
         let packet = PacketManager.protoDef.parsePacketBuffer("plasmovoiceudp_packet", msg);
 
         if (packet['data']['id'] == 'PingPacket') {
@@ -39,6 +40,7 @@ export default class VoiceServer {
 
             const data: SourceAudioPacket = packet.data.data;
 
+            /* TODO: Player Listening
             if (!Utils.findPlayerBySourceId(data.sourceId)) {
                 // SourceID is unknown
                 this.bot._client.writeChannel("plasmo:voice/v2",
@@ -76,6 +78,7 @@ export default class VoiceServer {
 
                 Utils.debug(playerObject.playerNick);
             }
+            */
 
             return;
         }
