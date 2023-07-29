@@ -9,7 +9,7 @@ This plugin is built using Node and can be installed using:
 npm install mineflayer-plasmovoice
 ```
 
-> **Required** to have these packets:
+**Required** to have these packets:
 
 * [**ffmpeg**](https://ffmpeg.org/) (Not required, if you are sending **only PCM** Format)
 
@@ -60,4 +60,4 @@ This project is accepting PRs and Issues. See something you think can be improve
 
 For larger changes, it is recommended to discuss these changes in the issues tab before writing any code. It's also preferred to make many smaller PRs than one large one, where applicable.
 
-> Made with official PlasmoVoice resources (https://plasmovoice.com)
+<h1 align="center">Made with official PlasmoVoice resources (https://plasmovoice.com)</h1>
