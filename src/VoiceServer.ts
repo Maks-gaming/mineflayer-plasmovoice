@@ -102,7 +102,13 @@ export default class VoiceServer {
         this.udpSecret = udpSecret;
 
         this.ping();
-        Utils.debug("[UDP] Sent first ping packet")
+        Utils.debug("[UDP] Sent first ping packet");
+
+        // TODO: Fix aternos.org
+        // @ts-ignore
+        if (this.bot._client.socket && this.bot._client.socket._host && this.bot._client.socket._host.toLowerCase().includes("aternos.me")) {
+            console.warn("\n[*] Attention! Aternos.org it is not supported and may not work due to traffic proxying errors! (https://github.com/Maks-gaming/mineflayer-plasmovoice)\n");
+        };
 
         // Stop UDP when program finish (for some reasons UDP can break after restart)
         process.on('SIGINT', () => {
