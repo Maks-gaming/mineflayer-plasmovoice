@@ -24,7 +24,7 @@ interface ConfigPacket {
         weight: number,
         hasPlayers: boolean,
         players: any
-    },
+    }[],
     activations: {
         name: string,
         translation: string,
@@ -42,4 +42,24 @@ interface ConfigPacket {
         key: string, 
         value: boolean 
     }[]
+}
+
+interface SourceAudioPacket {
+    sequenceNumber: BigInt,
+    data: Buffer,
+    sourceId: UUID,
+    sourceState: Buffer,
+    distance: number
+}
+
+interface VoicePlayerInfo {
+    playerId: UUID,
+    playerNick: string,
+    muted: boolean,
+    voiceDisabled: boolean,
+    microphoneMuted: boolean
+}
+
+interface PlayerDisconnectPacket {
+    playerId: UUID
 }

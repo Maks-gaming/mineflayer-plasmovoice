@@ -31,18 +31,19 @@ export default class VoiceRecoder {
         return success
     }
 
-    static convert_audio_to_pcm(name: string, ar: number, speed: number = 1.0) {
+    static convertToPCM(name: string, sampleRate: number = 48000, speed: number = 1.0, isStereo: boolean = false) {
         if (!(this.isUnixInstalled("ffmpeg") || this.isWindowsInstalled("ffmpeg"))) {
-            throw new Error("FFmpeg is not installed")
+            throw new Error("ffmpeg is not installed")
         }
+        
         const ffmpeg = spawn('ffmpeg', [
             '-y',
             '-i', name,
             '-acodec', 'pcm_s16le',
             '-f', 's16le',
-            '-filter:a', `atempo=${speed}`,
-            '-ac', '1',
-            '-ar', '' + ar,
+            '-filter:a', `atempo=${speed.toFixed(1)}`,
+            '-ac', isStereo ? "2" : "1",
+            '-ar', '' + sampleRate,
             'output.pcm'
         ]);
     

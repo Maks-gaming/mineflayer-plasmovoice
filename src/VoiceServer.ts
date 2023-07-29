@@ -5,7 +5,6 @@ import PacketManager from './PacketManager';
 import { OpusEncoder } from '@discordjs/opus';
 import Utils from './Utils';
 import hexToUuid from 'hex-to-uuid';
-import PlasmoVoice from './PlasmoVoice';
 
 // Types
 import { Bot } from "mineflayer";
@@ -29,11 +28,59 @@ export default class VoiceServer {
     // UDP Message handler
     private static async handler(msg: Buffer, rinfo: dgram.RemoteInfo) {
         let packet = PacketManager.protoDef.parsePacketBuffer("plasmovoiceudp_packet", msg);
+
         if (packet['data']['id'] == 'PingPacket') {
+            // Answer on ping packets
             await this.ping();
             return;
+        } else if (packet['data']['id'] == 'SourceAudioPacket') {
+            // Ignore this packet if no players
+            if (!PacketManager.players) { return; }
+
+            const data: SourceAudioPacket = packet.data.data;
+
+            if (!Utils.findPlayerBySourceId(data.sourceId)) {
+                // SourceID is unknown
+                this.bot._client.writeChannel("plasmo:voice/v2",
+                {
+                    "id": "SourceInfoRequestPacket",
+                    "data": {
+                        "sourceId": data.sourceId
+                    }
+                });
+                PacketManager.sourceById.push({
+                    sourceId: data.sourceId,
+                    playerId: null
+                })
+                Utils.debug("SourceInfoRequestPacket sent");
+            } else {
+                // SourceID is known
+                const sourceData = Utils.findPlayerBySourceId(data.sourceId);
+
+                if (!sourceData) {
+                    throw new Error("source data not found");
+                }
+
+                if (sourceData.playerId == null) {
+                    Utils.debug("ignoring voice: unknown sourceId (request already sent)")
+                    return;
+                }
+
+                const playerObject = PacketManager.players.find(e => 
+                    e.playerId.mostSignificantBits == packet.data.playerInfo.playerId.mostSignificantBits &&
+                    e.playerId.lessSignificantBits == packet.data.playerInfo.playerId.lessSignificantBits);
+
+                if (!playerObject) {
+                    throw new Error("player not found");
+                }
+
+                Utils.debug(playerObject.playerNick);
+            }
+
+            return;
         }
-        //console.log(`udp ${packet['data']['id']}`)
+
+        Utils.debug(`[UDP] Recieved ${packet['data']['id']} packet`);
     }
     
     // Send plasmovoice ping packet
@@ -52,10 +99,11 @@ export default class VoiceServer {
         this.udpSecret = udpSecret;
 
         this.ping();
+        Utils.debug("[UDP] Sent first ping packet")
 
+        // Stop UDP when program finish (for some reasons UDP can break after restart)
         process.on('SIGINT', () => {
             this.udpClient.close(() => {
-                console.log('socket closed');
                 process.exit(0);
             });
         });
@@ -76,7 +124,7 @@ export default class VoiceServer {
     }
 
     // UUID.nameUUIDFromBytes() in Java
-    private static generateId(input: Buffer) {
+    private static nameUUIDFromBytes(input: Buffer) {
         var md5Bytes = crypto.createHash('md5').update(input).digest()
         md5Bytes[6] &= 0x0f;  // clear version        
         md5Bytes[6] |= 0x30;  // set to version 3     
@@ -85,12 +133,12 @@ export default class VoiceServer {
         return hexToUuid(md5Bytes.toString('hex'))
     }
 
-    static async sendPCM(pcmBuffer: Buffer) {
-        const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, 1);
+    static async sendPCM(pcmBuffer: Buffer, distance: number = 16, isStereo: boolean = false) {
+        const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
         const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1000) * 20;
 
         const activationName = Buffer.from(PacketManager.configPacketData.activations[0].name + "_activation", "utf-8");
-        const activationUUID = await this.generateId(activationName);
+        const activationUUID = await this.nameUUIDFromBytes(activationName);
         const activationId: UUID = Utils.uuidStrToSigBits(activationUUID);
 
         // Cut pcm to frames
@@ -99,6 +147,10 @@ export default class VoiceServer {
             const frame = pcmBuffer.slice(i, i + frameSize);
             frames.push(frame);
         }
+
+        // TODO: Fix sending opus
+        // Since now sending the stream is most likely not quite correct, 
+        // because sometimes it breaks the mod down to the crash
 
         for (let i = 0; i < frames.length; i++) {
             const frame = frames[i];
@@ -114,13 +166,11 @@ export default class VoiceServer {
                 "sequenceNumber": BigInt(i),
                 "data": encodedOpus,
                 "activationId": activationId,
-                "distance": 8,
-                "stereo": false
+                "distance": distance,
+                "stereo": isStereo
             }
             const encodedVoicePacket = await PacketManager.encodeUDP(voicePacket, "PlayerAudioPacket", this.udpSecret);
-            await this.sendBuffer(encodedVoicePacket);
-
-            console.log(i);
+            this.sendBuffer(encodedVoicePacket);
 
             await new Promise(r => setTimeout(r, 3));
         }

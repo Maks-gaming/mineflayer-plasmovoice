@@ -5,17 +5,20 @@ import { ProtoDef } from "protodef";
 // Types
 import { Bot } from "mineflayer";
 import { Client } from "minecraft-protocol";
-import protocol from "./protocol";
+import protocol from "./data/protocol";
 
 const UDP_MAGIC_NUMBER: number = 1318061289;
 
 export default class PacketManager {
     static protoDef = new ProtoDef(false);
+    
     static publicKey: Buffer;
     static privateKey: string;
     static aesKey: Buffer;
 
     static configPacketData: ConfigPacket;
+    static players: VoicePlayerInfo[];
+    static sourceById: {sourceId: UUID, playerId: UUID | null}[] = [];
 
     static async init(bot: Bot) {
 
@@ -88,7 +91,7 @@ export default class PacketManager {
 
         const decrypted = crypto.privateDecrypt(
             { 
-                key: this.privateKey as string,
+                key: this.privateKey,
                 padding: crypto.constants.RSA_PKCS1_PADDING
             }, this.configPacketData.encryptionInfo.data);
         return decrypted;

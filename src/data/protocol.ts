@@ -62,6 +62,31 @@ export default {
     "login": {
       "toClient": {
         "types": {
+          "VoicePlayerInfo": [
+            "container",
+            [
+              {
+                "name": "playerId",
+                "type": "uuid"
+              },
+              {
+                "name": "playerNick",
+                "type": "string"
+              },
+              {
+                "name": "muted",
+                "type": "bool"
+              },
+              {
+                "name": "voiceDisabled",
+                "type": "bool"
+              },
+              {
+                "name": "microphoneMuted",
+                "type": "bool"
+              }
+            ]
+          ],
           "plasmovoice_ConnectionPacket": [
             "container",
             [
@@ -106,6 +131,28 @@ export default {
                     "countType": "int"
                   }
                 ]
+              }
+            ]
+          ],
+          "plasmovoice_PlayerDisconnectPacket": [
+            "container",
+            [
+              {
+                "name": "playerId",
+                "type": "uuid"
+              }
+            ]
+          ],
+          "plasmovoice_ConfigPlayerInfoPacket": [
+            "container",
+            [
+              {
+                "name": "permissionsLength",
+                "type": "int"
+              },
+              {
+                "name": "permissions",
+                "type": "hashmap"
               }
             ]
           ],
@@ -369,6 +416,7 @@ export default {
               }
             ]
           ],
+          "plasmovoice_PlayerInfoUpdatePacket": "VoicePlayerInfo",
           "plasmovoice_PlayerInfoRequestPacket": [
             "container",
             []
@@ -382,28 +430,70 @@ export default {
               }
             ]
           ],
-          "VoicePlayerInfo": [
+          "plasmovoice_SourceInfoRequestPacket": [
             "container",
             [
               {
-                "name": "playerId",
+                "name": "sourceId",
                 "type": "uuid"
-              },
+              }
+            ]
+          ],
+          "plasmovoice_SourceInfoPacket": [
+            "container",
+            [
               {
-                "name": "playerNick",
+                "name": "addonId",
                 "type": "string"
               },
               {
-                "name": "muted",
+                "name": "sourceId",
+                "type": "uuid"
+              },
+              {
+                "name": "lineId",
+                "type": "uuid"
+              },
+              {
+                "name": "sourceName",
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "type": "u8"
+              },
+              {
+                "name": "decoderInfo",
+                "type": "void"
+              },
+              {
+                "name": "stereo",
                 "type": "bool"
               },
               {
-                "name": "voiceDisabled",
+                "name": "iconVisible",
                 "type": "bool"
               },
               {
-                "name": "microphoneMuted",
-                "type": "bool"
+                "name": "angle",
+                "type": "int"
+              },
+              {
+                "name": "playerInfo",
+                "type": "VoicePlayerInfo"
+              }
+            ]
+          ],
+          "plasmovoice_SourceAudioEndPacket": [
+            "container",
+            [
+              {
+                "name": "sourceId",
+                "type": "uuid"
+              },
+              {
+                "name": "sequenceNumber",
+                "type": "long"
               }
             ]
           ],
@@ -422,7 +512,82 @@ export default {
               }
             ]
           ],
-          "plasmovoice_PlayerInfoUpdatePacket": "VoicePlayerInfo",
+          "plasmovoice_SourceLineRegisterPacket": [
+            "container",
+            [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "translation",
+                "type": "string"
+              },
+              {
+                "name": "defaultVolume",
+                "type": "long"
+              },
+              {
+                "name": "weight",
+                "type": "int"
+              },
+              {
+                "name": "hasPlayers",
+                "type": "bool"
+              },
+              {
+                "name": "players",
+                "type": [
+                  "switch",
+                  {
+                    "compareTo": "hasPlayers",
+                    "fields": {
+                      "false": "void",
+                      "true": [
+                        "container",
+                        [
+                          {
+                            "name": "id",
+                            "type": "uuid"
+                          },
+                          {
+                            "name": "name",
+                            "type": "string"
+                          },
+                          {
+                            "name": "properties",
+                            "type": [
+                              "array",
+                              {
+                                "countType": "int",
+                                "type": [
+                                  "containter",
+                                  [
+                                    {
+                                      "name": "name",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "name": "value",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "name": "signature",
+                                      "type": "string"
+                                    }
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
           "plasmovoice_LanguagePacket": [
             "container",
             [
@@ -484,12 +649,19 @@ export default {
                     "compareTo": "id",
                     "fields": {
                       "ConnectionPacket": "plasmovoice_ConnectionPacket",
+                      "PlayerInfoRequestPacket": "plasmovoice_PlayerInfoRequestPacket",
                       "ConfigPacket": "plasmovoice_ConfigPacket",
-                      "PlayerInfoPacket": "plasmovoice_PlayerInfoPacket",
-                      "PlayerListPacket": "plasmovoice_PlayerListPacket",
-                      "PlayerInfoUpdatePacket": "plasmovoice_PlayerInfoUpdatePacket",
+                      "ConfigPlayerInfoPacket": "plasmovoice_ConfigPlayerInfoPacket",
+                      "LanguageRequestPacket": "plasmovoice_LanguageRequestPacket",
                       "LanguagePacket": "plasmovoice_LanguagePacket",
-                      "LanguageRequestPacket": "plasmovoice_LanguageRequestPacket"
+                      "PlayerInfoUpdatePacket": "plasmovoice_PlayerInfoUpdatePacket",
+                      "PlayerDisconnectPacket": "plasmovoice_PlayerDisconnectPacket",
+                      "PlayerInfoPacket": "plasmovoice_PlayerInfoPacket",
+
+                      "PlayerListPacket": "plasmovoice_PlayerListPacket",
+                      "SourceInfoRequestPacket": "plasmovoice_SourceInfoRequestPacket",
+                      "SourceInfoPacket": "plasmovoice_SourceInfoPacket",
+                      "SourceLineRegisterPacket": "plasmovoice_SourceLineRegisterPacket"
                     },
                     "default": "void"
                   }
@@ -538,6 +710,36 @@ export default {
             {
               "name": "stereo",
               "type": "bool"
+            }
+          ]
+        ],
+        "plasmovoiceudp_SourceAudioPacket": [
+          "container",
+          [
+            {
+              "name": "sequenceNumber",
+              "type": "long"
+            },
+            {
+              "name": "data",
+              "type": [
+                "buffer",
+                {
+                  "countType": "int"
+                }
+              ]
+            },
+            {
+              "name": "sourceId",
+              "type": "uuid"
+            },
+            {
+              "name": "sourceState",
+              "type": "u8"
+            },
+            {
+              "name": "distance",
+              "type": "short"
             }
           ]
         ],
@@ -620,8 +822,10 @@ export default {
                   "compareTo": "id",
                   "fields": {
                     "PingPacket": "plasmovoiceudp_PingPacket",
+                    "PlayerListPacket": "plasmovoiceudp_PlayerListPacket",
                     "PlayerAudioPacket": "plasmovoiceudp_PlayerAudioPacket",
-                    "SelfAudioInfoPacket": "plasmovoiceudp_SelfAudioInfoPacket"
+                    "SourceAudioPacket": "plasmovoiceudp_SourceAudioPacket",
+                    "SelfAudioInfoPacket": "plasmovoiceudp_SelfAudioInfoPacket",
                   },
                   "default": "void"
                 }

@@ -1,6 +1,5 @@
 <h1 align="center">mineflayer-plasmovoice</h1>
-<p align="center"><i>A lightweight plugin for Mineflayer that allows use VoiceChat for PlasmoVoice plugin.</i></p>
-
+<p align="center"><i>A lightweight plugin for Mineflayer that allows use VoiceChat for PlasmoVoice 2.0.X plugin.</i></p>
 ---
 
 ### Getting Started
@@ -10,9 +9,9 @@ This plugin is built using Node and can be installed using:
 npm install mineflayer-plasmovoice
 ```
 
-**Required** to have these packets:
+> **Required** to have these packets:
 
-* [**ffmpeg**](https://ffmpeg.org/)
+* [**ffmpeg**](https://ffmpeg.org/) (Not required, if you are sending **only PCM** Format)
 
 ### Simple Bot
 
@@ -32,7 +31,7 @@ bot.on("voicechat_connected", () => {
     bot.setControlState("sneak", true)
 
     // Path to file with any audio format
-    bot.plasmovoice.SendAudio("music.mp3")
+    bot.plasmovoice.sendAudio("music.mp3")
 })
 
 bot.on("voicechat_audio_end", () => {
@@ -40,9 +39,14 @@ bot.on("voicechat_audio_end", () => {
 })
 ```
 
-### Documentation
+### Enabling debugging
+```js
+bot.on("login", () => {
+    bot.plasmovoice.enableDebug();
+})
+```
 
-[API](https://github.com/Maks-gaming/mineflayer-plasmovoice/blob/master/docs/api.md)
+### Documentation
 
 [Examples](https://github.com/Maks-gaming/mineflayer-plasmovoice/tree/master/examples)
 
@@ -55,3 +59,5 @@ This project uses the [MIT](https://github.com/Maks-gaming/mineflayer-plasmovoic
 This project is accepting PRs and Issues. See something you think can be improved? Go for it! Any and all help is highly appreciated!
 
 For larger changes, it is recommended to discuss these changes in the issues tab before writing any code. It's also preferred to make many smaller PRs than one large one, where applicable.
+
+> Made with official PlasmoVoice resources (https://plasmovoice.com)
