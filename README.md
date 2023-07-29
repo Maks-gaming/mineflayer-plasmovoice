@@ -46,6 +46,10 @@ bot.on("login", () => {
 })
 ```
 
+### Known issues
+* The plugin does not work with [Aternos.org](https://aternos.org) (Proxying errors)
+* PlasmoVoice 1.X.X temporarily not working
+
 ### Documentation
 
 [Examples](https://github.com/Maks-gaming/mineflayer-plasmovoice/tree/master/examples)
