@@ -1,6 +1,12 @@
 <h1 align="center">mineflayer-plasmovoice</h1>
-<p align="center"><i>A lightweight plugin for Mineflayer that allows use VoiceChat for PlasmoVoice 2.0.X plugin.</i></p>
----
+<p align="center"><i>A lightweight plugin for Mineflayer that allows use VoiceChat for PlasmoVoice plugin</i></p>
+
+### Features
+- 🔥 Supports **CommonJS** and **ES6**
+- 🔈 Allows to send any soundfile formats using **FFMPEG**
+- 🔒 Supports **AES-128-CBC** and **RSA** Encryption
+- 🖧 Using **ProtoDef** instead old cursoredBuffer
+- 👀 Almost exactly mimics the behavior of the original mod
 
 ### Getting Started
 
@@ -13,9 +19,9 @@ npm install mineflayer-plasmovoice
 
 * [**ffmpeg**](https://ffmpeg.org/) (Not required, if you are sending **only PCM** Format)
 
-### Simple Bot
+### Simple Sound Player
 
-The brief description goes here.
+A bot that sneaks will play a certain sound (music.mp3) and get up.
 
 ```js
 const mineflayer = require("mineflayer")
@@ -47,12 +53,8 @@ bot.on("login", () => {
 ```
 
 ### Known issues
-* The plugin does not work with [Aternos.org](https://aternos.org) (Proxying errors)
-* PlasmoVoice 1.X.X temporarily not working
-
-### Documentation
-
-[Examples](https://github.com/Maks-gaming/mineflayer-plasmovoice/tree/master/examples)
+* The plugin does not work with [Aternos.org](https://aternos.org) (Proxying errors - Freezing at sending first pinging packet)
+* PlasmoVoice 1.X.X temporarily not working (Very deprecated modules should be rewrited)
 
 ### License
 
@@ -64,4 +66,4 @@ This project is accepting PRs and Issues. See something you think can be improve
 
 For larger changes, it is recommended to discuss these changes in the issues tab before writing any code. It's also preferred to make many smaller PRs than one large one, where applicable.
 
-<h1 align="center">Made with official PlasmoVoice resources (https://plasmovoice.com)</h1>
+### Made with official PlasmoVoice resources (https://plasmovoice.com)
