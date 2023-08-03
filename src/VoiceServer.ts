@@ -14,6 +14,7 @@ export default class VoiceServer {
     static host: string;
     static port: number;
     static udpSecret: UUID;
+    static voiceLastTimestamp: number = Date.now();
 
     static udpClient = dgram.createSocket('udp4');
     
@@ -143,10 +144,16 @@ export default class VoiceServer {
     }
 
     static async sendPCM(pcmBuffer: Buffer, distance: number = 16, isStereo: boolean = false) {
+
+        // Throw an error, if previous voice is sending
+        if (Date.now() - this.voiceLastTimestamp < 3 * 1.5) {
+            //throw new Error("Voice channel is busy");
+        }
+
         const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
         const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1000) * 20;
 
-        const activationName = Buffer.from(PacketManager.configPacketData.activations[0].name + "_activation", "utf-8");
+        const activationName = Buffer.from("proximity" + "_activation", "utf-8");
         const activationUUID = await this.nameUUIDFromBytes(activationName);
         const activationId: UUID = Utils.uuidStrToSigBits(activationUUID);
 
@@ -180,11 +187,14 @@ export default class VoiceServer {
             }
             const encodedVoicePacket = await PacketManager.encodeUDP(voicePacket, "PlayerAudioPacket", this.udpSecret);
             this.sendBuffer(encodedVoicePacket);
+            this.voiceLastTimestamp = Date.now();
 
             await new Promise(r => setTimeout(r, 3));
         }
 
         // @ts-expect-error
         this.bot.emit("voicechat_audio_end");
+
+        Utils.debug("voicechat_audio_end");
     }
 }

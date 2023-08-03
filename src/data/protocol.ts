@@ -272,43 +272,49 @@ export default {
                               "fields": {
                                 "false": "void",
                                 "true": [
-                                  "container",
-                                  [
-                                    {
-                                      "name": "id",
-                                      "type": "uuid"
-                                    },
-                                    {
-                                      "name": "name",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "name": "properties",
-                                      "type": [
-                                        "array",
+                                  "array",
+                                  {
+                                    "countType": "int",
+                                    "type": [
+                                      "container",
+                                      [
                                         {
-                                          "countType": "int",
+                                          "name": "id",
+                                          "type": "uuid"
+                                        },
+                                        {
+                                          "name": "name",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "name": "properties",
                                           "type": [
-                                            "containter",
-                                            [
-                                              {
-                                                "name": "name",
-                                                "type": "string"
-                                              },
-                                              {
-                                                "name": "value",
-                                                "type": "string"
-                                              },
-                                              {
-                                                "name": "signature",
-                                                "type": "string"
-                                              }
-                                            ]
+                                            "array",
+                                            {
+                                              "countType": "int",
+                                              "type": [
+                                                "containter",
+                                                [
+                                                  {
+                                                    "name": "name",
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "name": "value",
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "name": "signature",
+                                                    "type": "string"
+                                                  }
+                                                ]
+                                              ]
+                                            }
                                           ]
                                         }
                                       ]
-                                    }
-                                  ]
+                                    ]
+                                  }
                                 ]
                               }
                             }
@@ -544,43 +550,49 @@ export default {
                     "fields": {
                       "false": "void",
                       "true": [
-                        "container",
-                        [
-                          {
-                            "name": "id",
-                            "type": "uuid"
-                          },
-                          {
-                            "name": "name",
-                            "type": "string"
-                          },
-                          {
-                            "name": "properties",
-                            "type": [
-                              "array",
+                        "array",
+                        {
+                          "countType": "int",
+                          "type": [
+                            "container",
+                            [
                               {
-                                "countType": "int",
+                                "name": "id",
+                                "type": "uuid"
+                              },
+                              {
+                                "name": "name",
+                                "type": "string"
+                              },
+                              {
+                                "name": "properties",
                                 "type": [
-                                  "containter",
-                                  [
-                                    {
-                                      "name": "name",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "name": "value",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "name": "signature",
-                                      "type": "string"
-                                    }
-                                  ]
+                                  "array",
+                                  {
+                                    "countType": "int",
+                                    "type": [
+                                      "containter",
+                                      [
+                                        {
+                                          "name": "name",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "name": "value",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "name": "signature",
+                                          "type": "string"
+                                        }
+                                      ]
+                                    ]
+                                  }
                                 ]
                               }
                             ]
-                          }
-                        ]
+                          ]
+                        }
                       ]
                     }
                   }

@@ -52,7 +52,7 @@ bot.on("login", () => {
 ### Known issues for fixing
 * The plugin does not work with [Aternos.org](https://aternos.org) (Proxying errors - Freezing at sending first pinging packet)
 * PlasmoVoice 1.X.X temporarily not working (Very deprecated modules should be rewrited)
-* ConfigPacket decode error (PartialReadError: Read error for data.ConfigPacket.sourceLines.0.players.true.name : Missing characters in string, found size is 954 expected size was 30712)
+* Max audio packet length is 48 seconds
 
 ---
 
