@@ -149,6 +149,12 @@ export default class PlasmoVoice {
         VoiceServer.sendPCM(fs.readFileSync(file), distance, isStereo);
     }
 
+    // Asked by NonemJS
+    async forceConnect() {
+        PacketManager.registerAll();
+    }
+
+    // Asked by Apehum
     async _sendPacket(packetId: string, data: Object) {
         this.bot._client.writeChannel("plasmo:voice/v2",
             {
@@ -158,6 +164,7 @@ export default class PlasmoVoice {
         );
     }
 
+    // Asked by Apehum
     async _sendPacketUDP(packetId: string, data: Object) {
         const packet = await PacketManager.encodeUDP(data, packetId, VoiceServer.udpSecret);
         VoiceServer.sendBuffer(packet);

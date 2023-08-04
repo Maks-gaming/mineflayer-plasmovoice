@@ -11,6 +11,7 @@ const UDP_MAGIC_NUMBER: number = 1318061289;
 
 export default class PacketManager {
     static protoDef = new ProtoDef(false);
+    static bot: Bot;
     
     static publicKey: Buffer;
     static privateKey: string;
@@ -21,6 +22,7 @@ export default class PacketManager {
     static sourceById: {sourceId: UUID, playerId: UUID | null}[] = []; // Unused (soon)
 
     static async init(bot: Bot) {
+        this.bot = bot;
 
         // Add types to ProtoDef
         this.protoDef.addProtocol(protocol, ["login", "toClient"]);
@@ -29,8 +31,7 @@ export default class PacketManager {
 
         // Register plasmo types & channels in ProtoDef on client login
         bot.once("login", async () => {
-            await this.registerPlasmoChannels(bot._client);
-            await this.registerPlasmoTypes(bot._client);
+            this.registerAll();
         })
 
         // Generate RSA keys
@@ -54,6 +55,11 @@ export default class PacketManager {
             this.publicKey = publicKey;
             this.privateKey = privateKey;
         });
+    }
+
+    static async registerAll() {
+        await this.registerPlasmoChannels(this.bot._client);
+        await this.registerPlasmoTypes(this.bot._client);
     }
 
     // Register channels
