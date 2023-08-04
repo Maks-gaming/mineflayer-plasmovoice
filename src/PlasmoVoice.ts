@@ -66,17 +66,6 @@ export default class PlasmoVoice {
                     throw new Error(`Unsupported encryption type "${packet["data"]["encryptionInfo"]["algorithm"]}"`);
                 }
 
-                // LanguageRequestPacket (probably useless)
-                Utils.debug("[plasmo:voice/v2] Sending LanguageRequestPacket")
-                this.bot._client.writeChannel("plasmo:voice/v2",
-                    {
-                        "id": "LanguageRequestPacket",
-                        "data": {
-                            language: "en_US"
-                        }
-                    }
-                ); 
-
                 // @ts-expect-error
                 this.bot.emit("plasmovoice_connected");
                 
@@ -158,6 +147,20 @@ export default class PlasmoVoice {
 
     async sendPCM(file: string, distance: number = 16, isStereo: boolean = false) {
         VoiceServer.sendPCM(fs.readFileSync(file), distance, isStereo);
+    }
+
+    async _sendPacket(packetId: string, data: Object) {
+        this.bot._client.writeChannel("plasmo:voice/v2",
+            {
+                "id": packetId,
+                "data": data
+            }
+        );
+    }
+
+    async _sendPacketUDP(packetId: string, data: Object) {
+        const packet = await PacketManager.encodeUDP(data, packetId, VoiceServer.udpSecret);
+        VoiceServer.sendBuffer(packet);
     }
 
     async enableDebug() {

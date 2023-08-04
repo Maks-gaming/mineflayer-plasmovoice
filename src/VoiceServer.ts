@@ -8,6 +8,7 @@ import hexToUuid from 'hex-to-uuid';
 
 // Types
 import { Bot } from "mineflayer";
+import { debug } from './PlasmoVoice';
 
 export default class VoiceServer {
     static bot: Bot;
@@ -135,7 +136,7 @@ export default class VoiceServer {
 
     // UUID.nameUUIDFromBytes() in Java
     private static nameUUIDFromBytes(input: Buffer) {
-        var md5Bytes = crypto.createHash('md5').update(input).digest()
+        var md5Bytes = crypto.createHash('md5').update(input).digest();
         md5Bytes[6] &= 0x0f;  // clear version        
         md5Bytes[6] |= 0x30;  // set to version 3     
         md5Bytes[8] &= 0x3f;  // clear variant        
@@ -147,7 +148,11 @@ export default class VoiceServer {
 
         // Throw an error, if previous voice is sending
         if (Date.now() - this.voiceLastTimestamp < 3 * 1.5) {
-            //throw new Error("Voice channel is busy");
+            if (!debug) {
+                throw new Error("Voice channel is busy");
+            } else {
+                Utils.debug("[Error] Voice channel is busy");
+            }
         }
 
         const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
@@ -178,13 +183,14 @@ export default class VoiceServer {
             const encodedOpus = await PacketManager.encryptVoice(opus);
 
             // PlayerAudioPacket
-            const voicePacket = {
+            let voicePacket = {
                 "sequenceNumber": BigInt(i),
                 "data": encodedOpus,
                 "activationId": activationId,
                 "distance": distance,
                 "stereo": isStereo
             }
+
             const encodedVoicePacket = await PacketManager.encodeUDP(voicePacket, "PlayerAudioPacket", this.udpSecret);
             this.sendBuffer(encodedVoicePacket);
             this.voiceLastTimestamp = Date.now();
