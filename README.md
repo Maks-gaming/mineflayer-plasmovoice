@@ -14,7 +14,6 @@
 # Getting Started
 #### Installation
 1) This plugin is built using Node and can be installed using: ```npm install mineflayer-plasmovoice --save```
-2) Then install [**ffmpeg**](https://ffmpeg.org/) (Not required, if you are sending **only PCM** Format)
 
 #### Simple Sound Player
 A bot that sneaks will play a certain sound (music.mp3) and get up.
@@ -49,9 +48,7 @@ bot.on("login", () => {
 
 ---
 
-### Known issues for fixing
-* The plugin does not work with [Aternos.org](https://aternos.org) (Proxying errors - Freezing at sending first pinging packet)
-* PlasmoVoice 1.X.X temporarily not working (Very deprecated modules should be rewrited)
+### Known issues for fixingssss
 * Max audio packet length is 48 seconds
 
 ---

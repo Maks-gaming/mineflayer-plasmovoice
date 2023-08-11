@@ -63,3 +63,9 @@ interface VoicePlayerInfo {
 interface PlayerDisconnectPacket {
     playerId: UUID
 }
+
+interface ConnectionPacket {
+    secret: UUID,
+    ip: string,
+    port: number
+}

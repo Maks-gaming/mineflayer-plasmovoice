@@ -1,4 +1,5 @@
-import PacketManager from "./PacketManager";
+// Types
+import { Bot } from "mineflayer";
 import { debug } from "./PlasmoVoice";
 
 export default class Utils {
@@ -30,14 +31,20 @@ export default class Utils {
         }
     }
 
-    static findPlayerBySourceId(uuid: UUID) {
+    static getHost(bot: Bot) {
+        // @ts-ignore
+        return bot._client.socket && bot._client.socket._host ? bot._client.socket._host : null;
+    }
+
+    /*static findPlayerBySourceId(uuid: UUID) {
         return PacketManager.sourceById.find(item => Utils.objectEquals(item.sourceId, uuid));
     }
 
     static findPlayerByPlayerId(uuid: UUID) {
         return PacketManager.players.find(item => Utils.objectEquals(item.playerId, uuid));
-    }
+    }*/
 
+    /*
     static objectEquals(x: any, y: any): boolean {
         'use strict';
     
@@ -63,4 +70,5 @@ export default class Utils {
         return Object.keys(y).every(function (i) { return p.indexOf(i) !== -1; }) &&
             p.every(function (i) { return Utils.objectEquals(x[i], y[i]); });
     }
+    */
 }

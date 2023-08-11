@@ -15,7 +15,7 @@ export default class VoiceServer {
     static host: string;
     static port: number;
     static udpSecret: UUID;
-    static voiceLastTimestamp: number = Date.now();
+    static voiceLastTimestamp: number = 0;
 
     static udpClient = dgram.createSocket('udp4');
     
@@ -30,17 +30,17 @@ export default class VoiceServer {
 
     // UDP Message handler
     private static async handler(msg: Buffer, _: dgram.RemoteInfo) {
-        let packet = PacketManager.protoDef.parsePacketBuffer("plasmovoiceudp_packet", msg);
+        const packet = PacketManager.protoDef.parsePacketBuffer("plasmovoiceudp_packet", msg);
 
-        if (packet['data']['id'] == 'PingPacket') {
+        if (packet.data.id == 'PingPacket') {
             // Answer on ping packets
             await this.ping();
             return;
-        } else if (packet['data']['id'] == 'SourceAudioPacket') {
+        } else if (packet.data.id == 'SourceAudioPacket') {
             // Ignore this packet if no players
             if (!PacketManager.players) { return; }
 
-            const data: SourceAudioPacket = packet.data.data;
+            //const data: SourceAudioPacket = packet.data.data;
 
             /* TODO: Player Listening
             if (!Utils.findPlayerBySourceId(data.sourceId)) {
@@ -85,7 +85,7 @@ export default class VoiceServer {
             return;
         }
 
-        Utils.debug(`[UDP] Recieved ${packet['data']['id']} packet`);
+        Utils.debug(`[UDP] Recieved ${packet.data.id} packet`);
     }
     
     // Send plasmovoice ping packet
@@ -104,13 +104,8 @@ export default class VoiceServer {
         this.udpSecret = udpSecret;
 
         this.ping();
-        Utils.debug("[UDP] Sent first ping packet");
 
-        // TODO: Fix aternos.org
-        // @ts-ignore
-        if (this.bot._client.socket && this.bot._client.socket._host && this.bot._client.socket._host.toLowerCase().includes("aternos.me")) {
-            console.warn("\n[*] Attention! Aternos.org it is not supported and may not work due to traffic proxying errors! (https://github.com/Maks-gaming/mineflayer-plasmovoice)\n");
-        };
+        Utils.debug("[UDP] Sent first ping packet");
 
         // Stop UDP when program finish (for some reasons UDP can break after restart)
         process.on('SIGINT', () => {
@@ -158,9 +153,9 @@ export default class VoiceServer {
         const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
         const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1000) * 20;
 
-        const activationName = Buffer.from("proximity" + "_activation", "utf-8");
-        const activationUUID = await this.nameUUIDFromBytes(activationName);
-        const activationId: UUID = Utils.uuidStrToSigBits(activationUUID);
+        const activationName: Buffer = Buffer.from("proximity" + "_activation", "utf-8");
+        const activationId: string = this.nameUUIDFromBytes(activationName);
+        const activationUUID: UUID = Utils.uuidStrToSigBits(activationId);
 
         // Cut pcm to frames
         const frames = [];
@@ -170,23 +165,24 @@ export default class VoiceServer {
         }
 
         // TODO: Fix sending opus
-        // Since now sending the stream is most likely not quite correct, 
-        // because sometimes it breaks the mod down to the crash
+        // Since now sending the stream is most likely not quite correct
 
         for (let i = 0; i < frames.length; i++) {
             const frame = frames[i];
+
+            // Last frame (by default is empty or silent)
             if (frame.length !== frameSize) {
-                return;
+                break;
             }
             
             const opus = opusEncoder.encode(frame);
-            const encodedOpus = await PacketManager.encryptVoice(opus);
+            const ecryptedOpus = await PacketManager.encryptVoice(opus);
 
             // PlayerAudioPacket
             let voicePacket = {
                 "sequenceNumber": BigInt(i),
-                "data": encodedOpus,
-                "activationId": activationId,
+                "data": ecryptedOpus,
+                "activationId": activationUUID,
                 "distance": distance,
                 "stereo": isStereo
             }
@@ -200,7 +196,5 @@ export default class VoiceServer {
 
         // @ts-expect-error
         this.bot.emit("voicechat_audio_end");
-
-        Utils.debug("voicechat_audio_end");
     }
 }

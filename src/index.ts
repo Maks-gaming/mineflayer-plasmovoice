@@ -2,7 +2,7 @@ import { Bot } from "mineflayer";
 import PlasmoVoice from "./PlasmoVoice";
 
 export function plugin(bot: Bot) {
-    const plasmovoice = new PlasmoVoice(bot);
+    const plasmovoice: PlasmoVoice = new PlasmoVoice(bot);
     bot.plasmovoice = plasmovoice;
 }
 

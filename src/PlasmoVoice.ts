@@ -26,8 +26,7 @@ export default class PlasmoVoice {
 
         // Listen plugin channels
         this.bot._client.on("plasmo:voice/v2", async (packet) => {
-            if (!packet) { return; }
-
+            
             Utils.debug(`[plasmo:voice/v2] Recieved ${packet.id}`);
 
             if (packet.id == 'PlayerInfoRequestPacket') {
@@ -47,27 +46,32 @@ export default class PlasmoVoice {
                 );
                 return;
             } else if (packet.id == 'ConnectionPacket') {
-                // Save data & create voice server
-                if (packet["data"]["secret"] && packet["data"]["port"] && packet["data"]["ip"]) {
-                    await VoiceServer.connect(packet["data"]["ip"], packet["data"]["port"], packet["data"]["secret"]);
+                const data: ConnectionPacket = packet.data;
+
+                // Create voice server
+                if (data.ip == "0.0.0.0") {
+                    await VoiceServer.connect(Utils.getHost(this.bot), data.port, data.secret);
                 } else {
-                    throw new Error("ConnectionPacket is invalid");
+                    await VoiceServer.connect(data.ip, data.port, data.secret);
                 }
+
                 return;
             } else if (packet.id == 'ConfigPacket') {
+                const data: ConfigPacket = packet.data;
+
                 // Save data from this packet
-                PacketManager.configPacketData = packet["data"];
+                PacketManager.configPacketData = data;
                 PacketManager.aesKey = await PacketManager.getAESKey();
 
                 // Check for correct encryption
-                if (packet["data"]["hasEncryptionInfo"] == false) {
+                if (data.hasEncryptionInfo == false) {
                     throw new Error(`Encryption is disabled`);
-                } else if (packet["data"]["encryptionInfo"]["algorithm"] != "AES/CBC/PKCS5Padding") {
-                    throw new Error(`Unsupported encryption type "${packet["data"]["encryptionInfo"]["algorithm"]}"`);
+                } else if (data.encryptionInfo.algorithm != "AES/CBC/PKCS5Padding") {
+                    throw new Error(`Unsupported encryption type "${data.encryptionInfo.algorithm}"`);
                 }
 
                 // @ts-expect-error
-                this.bot.emit("plasmovoice_connected");
+                this.bot.emit("voicechat_connected");
                 
                 return;
             } else if (packet.id == "PlayerListPacket") {
@@ -76,6 +80,9 @@ export default class PlasmoVoice {
                 PacketManager.players = players;
                 return;
             } else if (packet.id == "PlayerInfoUpdatePacket") {
+                // TODO: Player data saving
+                return;
+                /*
                 // Ignore this packet if no players
                 if (PacketManager.players.length == 0) { return; }
     
@@ -88,7 +95,11 @@ export default class PlasmoVoice {
                 PacketManager.players.push(data);
     
                 return;
+                */
             } else if (packet.id == 'PlayerDisconnectPacket') {
+                // TODO: Player data saving
+                return;
+                /*
                 // Ignore this packet if no players
                 if (PacketManager.players.length == 0) { return; }
 
@@ -97,11 +108,11 @@ export default class PlasmoVoice {
                 PacketManager.players = PacketManager.players.filter(e => !Utils.findPlayerByPlayerId(data.playerId));
 
                 return;
-            } else if (packet.id == 'SelfAudioInfoPacket') {
-                //return;
+                */
             } else if (packet.id == 'SourceInfoPacket') {
-                /* TODO: Player Listening
-                
+                // TODO: Source Info Saving
+                return;
+                /*
                 const request = Utils.findPlayerBySourceId(packet.data.sourceId);
                 
                 Utils.debug(Utils.uuidBytesToString(packet.data.sourceId));
@@ -124,9 +135,9 @@ export default class PlasmoVoice {
                     console.log(PacketManager.sourceById)
                     Utils.debug("SourceInfoPacket parsed");
                 }
-                */
                 
                 return;
+                */
             }
 
             Utils.debug(`[plasmo:voice/v2] Skipped ${packet.id}`);
@@ -139,10 +150,8 @@ export default class PlasmoVoice {
         }
 
         Utils.debug("[sendAudio] Converting given soundfile to PCM")
-        var ffmpeg = VoiceRecoder.convertToPCM(file, PacketManager.configPacketData.captureInfo.sampleRate, speed, isStereo);
-        ffmpeg.on('close', (code) => {
-            this.sendPCM("output.pcm", distance, isStereo);
-        });
+        var pcmBuffer = await VoiceRecoder.convertToPCM(file, PacketManager.configPacketData.captureInfo.sampleRate, speed, isStereo);
+        VoiceServer.sendPCM(pcmBuffer, distance, isStereo);
     }
 
     async sendPCM(file: string, distance: number = 16, isStereo: boolean = false) {

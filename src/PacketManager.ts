@@ -10,8 +10,8 @@ import protocol from "./data/protocol";
 const UDP_MAGIC_NUMBER: number = 1318061289;
 
 export default class PacketManager {
-    static protoDef = new ProtoDef(false);
     static bot: Bot;
+    static protoDef = new ProtoDef(false);
     
     static publicKey: Buffer;
     static privateKey: string;
@@ -19,7 +19,7 @@ export default class PacketManager {
 
     static configPacketData: ConfigPacket;
     static players: VoicePlayerInfo[];
-    static sourceById: {sourceId: UUID, playerId: UUID | null}[] = []; // Unused (soon)
+    //static sourceById: {sourceId: UUID, playerId: UUID | null}[] = []; // Unused (soon)
 
     static async init(bot: Bot) {
         this.bot = bot;
@@ -35,7 +35,7 @@ export default class PacketManager {
         })
 
         // Generate RSA keys
-        crypto.generateKeyPair('rsa', {
+        const keys = crypto.generateKeyPairSync('rsa', {
             modulusLength: 2048,
             publicKeyEncoding: {
                 type: 'spki',
@@ -45,16 +45,10 @@ export default class PacketManager {
                 type: 'pkcs1',
                 format: 'pem'
             }
-        }, (err, publicKey, privateKey) => {
-            // Handle errors
-            if (err) {
-                throw new Error(`Failed to generate RSA Key: ${err}`);
-            }
+        })
 
-            // Save keys
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
-        });
+        this.publicKey = keys.publicKey;
+        this.privateKey = keys.privateKey;
     }
 
     static async registerAll() {
@@ -95,14 +89,15 @@ export default class PacketManager {
     // we should probably add support for multiple algorithms (c) cralix
 
     static async getAESKey() {
-        if (!this.configPacketData) { throw new Error("ConfigPacket is not recieved!"); }
-
-        const decrypted = crypto.privateDecrypt(
+        const aesKey = crypto.privateDecrypt(
             { 
                 key: this.privateKey,
                 padding: crypto.constants.RSA_PKCS1_PADDING
-            }, this.configPacketData.encryptionInfo.data);
-        return decrypted;
+            }, 
+            this.configPacketData.encryptionInfo.data
+        );
+
+        return aesKey;
     }
 
     static async encryptVoice(data: Buffer): Promise<Buffer> {
@@ -116,8 +111,6 @@ export default class PacketManager {
 
     // Unused
     static async decryptVoice(encrypted: Buffer): Promise<Buffer> {
-        if (!this.configPacketData) { throw new Error("ConfigPacket is not recieved!"); }
-
         const iv = encrypted.slice(0, 16);
         const data = encrypted.slice(16);
 

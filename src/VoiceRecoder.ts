@@ -1,52 +1,31 @@
-import { spawn, execSync } from "child_process";
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 export default class VoiceRecoder {
-    private static isUnixInstalled(program: string) {
-        try {
-            execSync(`hash ${program} 2>/dev/null`, { stdio: 'ignore' })
-            return true
-        } catch {
-            return false
-        }
-    }
-    
-    private static isWindowsInstalled(program: string) {
-        // Try a couple variants, depending on execution environment the .exe
-        // may or may not be required on both `where` and the program name.
-        const attempts = [
-            `where ${program}`,
-            `where ${program}.exe`,
-            `where.exe ${program}`,
-            `where.exe ${program}.exe`
-        ]
-    
-        let success = false
-        for (const a of attempts) {
-            try {
-                execSync(a, { stdio: 'ignore' })
-                success = true
-            } catch { }
-        }
-    
-        return success
-    }
+    static convertToPCM(name: string, sampleRate: number = 48000, speed: number = 1.0, isStereo: boolean = false): Promise<Buffer> {   
+        return new Promise((resolve, reject) => {
+            let chunks: Uint8Array[] = [];
 
-    static convertToPCM(name: string, sampleRate: number = 48000, speed: number = 1.0, isStereo: boolean = false) {
-        if (!(this.isUnixInstalled("ffmpeg") || this.isWindowsInstalled("ffmpeg"))) {
-            throw new Error("ffmpeg is not installed")
-        }
-        
-        const ffmpeg = spawn('ffmpeg', [
-            '-y',
-            '-i', name,
-            '-acodec', 'pcm_s16le',
-            '-f', 's16le',
-            '-filter:a', `atempo=${speed.toFixed(1)}`,
-            '-ac', isStereo ? "2" : "1",
-            '-ar', '' + sampleRate,
-            'output.pcm'
-        ]);
-    
-        return ffmpeg;
+            const ffmpegCommand = ffmpeg(name)
+                .audioCodec('pcm_s16le')
+                .format('s16le')
+                .audioFilters(`atempo=${speed.toFixed(1)}`)
+                .audioChannels(isStereo ? 2 : 1)
+                .audioFrequency(sampleRate)
+                .on('error', reject);
+            
+            const audioStream = ffmpegCommand.pipe();
+
+            audioStream.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+
+            audioStream.on('end', () => {
+                let outputBuffer = Buffer.concat(chunks);
+                resolve(outputBuffer)
+            });
+        });
     }
 }
