@@ -28,8 +28,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "hex-to-uuid": "^1.1.1",
     "mineflayer": "^4.8.1",
-    "protodef": "^1.15.0",
-    "stream-to-buffer": "^0.1.0"
+    "protodef": "^1.15.0"
   },
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.21",
