@@ -55,7 +55,7 @@ bot.on("voicechat_voice", (data) => {
         distance: number
         sequenceNumber: BigInt
         data: Buffer
-    }/*
+    }*/
 })
 ```
 
@@ -65,7 +65,7 @@ bot.on("voicechat_voice_end", (data) => {
     /*{
         player: string,
         sequenceNumber: BigInt
-    }/*
+    }*/
 })
 ```
 
