@@ -69,3 +69,24 @@ interface ConnectionPacket {
     ip: string,
     port: number
 }
+
+interface SourceInfoPacket {
+    sourceType: string,
+    addonId: string,
+    id: UUID,
+    hasSourceName: boolean,
+    sourceName: string | undefined,
+    state: number
+    hasDecoderInfo: boolean,
+    decoderInfo: any,
+    stereo: boolean,
+    lineId: UUID,
+    iconVisible: boolean,
+    angle: number,
+    playerInfo: VoicePlayerInfo
+}
+
+interface SourceAudioEndPacket {
+    sourceId: UUID,
+    sequenceNumber: BigInt
+}

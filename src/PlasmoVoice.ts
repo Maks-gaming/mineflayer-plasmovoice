@@ -38,7 +38,7 @@ export default class PlasmoVoice {
                         "data": {
                             voiceDisabled: false,
                             microphoneMuted: false,
-                            minecraftVersion: "1.19.4",
+                            minecraftVersion: bot.version,
                             version: "2.0.3",
                             publicKey: PacketManager.publicKey
                         }
@@ -74,70 +74,38 @@ export default class PlasmoVoice {
                 this.bot.emit("voicechat_connected");
                 
                 return;
-            } else if (packet.id == "PlayerListPacket") {
-                // Save players from packet
-                const players: VoicePlayerInfo[] = packet.data.players;
-                PacketManager.players = players;
-                return;
-            } else if (packet.id == "PlayerInfoUpdatePacket") {
-                // TODO: Player data saving
-                return;
-                /*
-                // Ignore this packet if no players
-                if (PacketManager.players.length == 0) { return; }
-    
-                const data: VoicePlayerInfo = packet['data'];
-
-                // Delete player from list
-                PacketManager.players = PacketManager.players.filter(e => !Utils.findPlayerByPlayerId(data.playerId));
-
-                // Add new data
-                PacketManager.players.push(data);
-    
-                return;
-                */
-            } else if (packet.id == 'PlayerDisconnectPacket') {
-                // TODO: Player data saving
-                return;
-                /*
-                // Ignore this packet if no players
-                if (PacketManager.players.length == 0) { return; }
-
-                // Delete player from list
-                const data: PlayerDisconnectPacket = packet.data;
-                PacketManager.players = PacketManager.players.filter(e => !Utils.findPlayerByPlayerId(data.playerId));
-
-                return;
-                */
             } else if (packet.id == 'SourceInfoPacket') {
-                // TODO: Source Info Saving
+                const data: SourceInfoPacket = packet.data;
+
+                // Don't save a player, if it's exists
+                if (PacketManager.sourceById.some(item => item.playerName == data.playerInfo.playerNick)) {
+                    return;
+                }
+
+                PacketManager.sourceById.push({
+                    "sourceId": data.id,
+                    "playerName": data.playerInfo.playerNick
+                })
+
+                Utils.debug(PacketManager.sourceById);
+
                 return;
-                /*
-                const request = Utils.findPlayerBySourceId(packet.data.sourceId);
-                
-                Utils.debug(Utils.uuidBytesToString(packet.data.sourceId));
-                if (request != undefined) {
-                    Utils.debug(1)
-                    if (request.playerId) {
-                        return;
-                    }
-                    Utils.debug(2)
+            } else if (packet.id == 'SourceAudioEndPacket') {
+                const data: SourceAudioEndPacket = packet.data;
 
-                    // Delete old from list
-                    PacketManager.sourceById = PacketManager.sourceById.filter(e => !Utils.findPlayerBySourceId(packet.data.sourceId))
-
-                    // Push new data
-                    PacketManager.sourceById.push({
-                        "sourceId": packet.data.sourceId,
-                        "playerId": packet.data.playerInfo.playerId
-                    })
-
-                    console.log(PacketManager.sourceById)
-                    Utils.debug("SourceInfoPacket parsed");
+                const sourceData = PacketManager.sourceById.find(item => Utils.objectEquals(item.sourceId, data.sourceId));
+                if (!sourceData) {
+                    Utils.debug(`Unknown sourceId in SourceAudioEndPacket`);
+                    return;
                 }
                 
+                // @ts-expect-error
+                this.bot.emit("voicechat_voice_end", {
+                    "player": sourceData.playerName,
+                    "sequenceNumber": data.sequenceNumber
+                })
+
                 return;
-                */
             }
 
             Utils.debug(`[plasmo:voice/v2] Skipped ${packet.id}`);
@@ -156,6 +124,20 @@ export default class PlasmoVoice {
 
     async sendPCM(file: string, distance: number = 16, isStereo: boolean = false) {
         VoiceServer.sendPCM(fs.readFileSync(file), distance, isStereo);
+    }
+
+    async getSampleRate() {
+        return PacketManager.configPacketData.captureInfo.sampleRate;
+    }
+
+    async getAllowedDistances() {
+        const proximity = await PacketManager.getProximityActivation();
+        return proximity?.distances;
+    }
+
+    async getDefaultDistance() {
+        const proximity = await PacketManager.getProximityActivation();
+        return proximity?.defaultDistance;
     }
 
     // Asked by NonemJS

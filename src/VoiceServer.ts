@@ -37,14 +37,21 @@ export default class VoiceServer {
             await this.ping();
             return;
         } else if (packet.data.id == 'SourceAudioPacket') {
-            // Ignore this packet if no players
-            if (!PacketManager.players) { return; }
+            const data: SourceAudioPacket = packet.data.data;
 
-            //const data: SourceAudioPacket = packet.data.data;
+            if (PacketManager.sourceById.some(item => Utils.objectEquals(item.sourceId, data.sourceId))) {
+                // Sound event
+                const sourceData = PacketManager.sourceById.find(item => Utils.objectEquals(item.sourceId, data.sourceId));
 
-            /* TODO: Player Listening
-            if (!Utils.findPlayerBySourceId(data.sourceId)) {
-                // SourceID is unknown
+                // @ts-expect-error
+                this.bot.emit("voicechat_voice", {
+                    "player": sourceData?.playerName,
+                    "distance": data.distance,
+                    "sequenceNumber": data.sequenceNumber,
+                    "data": await PacketManager.decryptVoice(data.data)
+                })
+            } else {
+                // SourceInfoRequestPacket (unknown sourceId)
                 this.bot._client.writeChannel("plasmo:voice/v2",
                 {
                     "id": "SourceInfoRequestPacket",
@@ -52,35 +59,7 @@ export default class VoiceServer {
                         "sourceId": data.sourceId
                     }
                 });
-                PacketManager.sourceById.push({
-                    sourceId: data.sourceId,
-                    playerId: null
-                })
-                Utils.debug("SourceInfoRequestPacket sent");
-            } else {
-                // SourceID is known
-                const sourceData = Utils.findPlayerBySourceId(data.sourceId);
-
-                if (!sourceData) {
-                    throw new Error("source data not found");
-                }
-
-                if (sourceData.playerId == null) {
-                    Utils.debug("ignoring voice: unknown sourceId (request already sent)")
-                    return;
-                }
-
-                const playerObject = PacketManager.players.find(e => 
-                    e.playerId.mostSignificantBits == packet.data.playerInfo.playerId.mostSignificantBits &&
-                    e.playerId.lessSignificantBits == packet.data.playerInfo.playerId.lessSignificantBits);
-
-                if (!playerObject) {
-                    throw new Error("player not found");
-                }
-
-                Utils.debug(playerObject.playerNick);
             }
-            */
 
             return;
         }
@@ -151,7 +130,7 @@ export default class VoiceServer {
         }
 
         const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
-        const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1000) * 20;
+        const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1_000) * 20;
 
         const activationName: Buffer = Buffer.from("proximity" + "_activation", "utf-8");
         const activationId: string = this.nameUUIDFromBytes(activationName);

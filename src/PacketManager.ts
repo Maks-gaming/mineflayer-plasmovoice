@@ -18,8 +18,7 @@ export default class PacketManager {
     static aesKey: Buffer;
 
     static configPacketData: ConfigPacket;
-    static players: VoicePlayerInfo[];
-    //static sourceById: {sourceId: UUID, playerId: UUID | null}[] = []; // Unused (soon)
+    static sourceById: {sourceId: UUID, playerName: string}[] = [];
 
     static async init(bot: Bot) {
         this.bot = bot;
@@ -55,6 +54,11 @@ export default class PacketManager {
         await this.registerPlasmoChannels(this.bot._client);
         await this.registerPlasmoTypes(this.bot._client);
     }
+
+    static async getProximityActivation() {
+        return this.configPacketData.activations.find(element => element.proximity === true);
+    }
+    
 
     // Register channels
     private static async registerPlasmoChannels(client: Client) {

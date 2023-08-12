@@ -449,32 +449,62 @@ export default {
             "container",
             [
               {
+                "name": "sourceType",
+                "type": "string"
+              },
+              {
                 "name": "addonId",
                 "type": "string"
               },
               {
-                "name": "sourceId",
+                "name": "id",
                 "type": "uuid"
               },
               {
-                "name": "lineId",
-                "type": "uuid"
+                "name": "hasSourceName",
+                "type": "bool"
               },
               {
                 "name": "sourceName",
-                "type": "string"
+                "type": [
+                  "switch",
+                  {
+                    "compareTo": "hasSourceName",
+                    "fields": {
+                      "false": "void",
+                      "true": "string"
+                    }
+                  }
+                ]
               },
               {
                 "name": "state",
                 "type": "u8"
               },
               {
+                "name": "hasDecoderInfo",
+                "type": "bool"
+              },
+              {
                 "name": "decoderInfo",
-                "type": "void"
+                "type": [
+                  "switch",
+                  {
+                    "compareTo": "hasDecoderInfo",
+                    "fields": {
+                      "false": "void",
+                      "true": "codecInfo"
+                    }
+                  }
+                ]
               },
               {
                 "name": "stereo",
                 "type": "bool"
+              },
+              {
+                "name": "lineId",
+                "type": "uuid"
               },
               {
                 "name": "iconVisible",
@@ -487,7 +517,7 @@ export default {
               {
                 "name": "playerInfo",
                 "type": "VoicePlayerInfo"
-              }
+              },
             ]
           ],
           "plasmovoice_SourceAudioEndPacket": [
@@ -673,7 +703,8 @@ export default {
                       "PlayerListPacket": "plasmovoice_PlayerListPacket",
                       "SourceInfoRequestPacket": "plasmovoice_SourceInfoRequestPacket",
                       "SourceInfoPacket": "plasmovoice_SourceInfoPacket",
-                      "SourceLineRegisterPacket": "plasmovoice_SourceLineRegisterPacket"
+                      "SourceLineRegisterPacket": "plasmovoice_SourceLineRegisterPacket",
+                      "SourceAudioEndPacket": "plasmovoice_SourceAudioEndPacket"
                     },
                     "default": "void"
                   }

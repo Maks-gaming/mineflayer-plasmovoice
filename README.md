@@ -46,6 +46,29 @@ bot.on("login", () => {
 })
 ```
 
+#### Listening players
+> An example of an event when some player is talking
+```js
+bot.on("voicechat_voice", (data) => {
+    /*{
+        player: string,
+        distance: number
+        sequenceNumber: BigInt
+        data: Buffer
+    }/*
+})
+```
+
+> An example of an event when some player stopped talking
+```js
+bot.on("voicechat_voice_end", (data) => {
+    /*{
+        player: string,
+        sequenceNumber: BigInt
+    }/*
+})
+```
+
 ---
 
 ### Known issues for fixingssss

@@ -36,15 +36,6 @@ export default class Utils {
         return bot._client.socket && bot._client.socket._host ? bot._client.socket._host : null;
     }
 
-    /*static findPlayerBySourceId(uuid: UUID) {
-        return PacketManager.sourceById.find(item => Utils.objectEquals(item.sourceId, uuid));
-    }
-
-    static findPlayerByPlayerId(uuid: UUID) {
-        return PacketManager.players.find(item => Utils.objectEquals(item.playerId, uuid));
-    }*/
-
-    /*
     static objectEquals(x: any, y: any): boolean {
         'use strict';
     
@@ -70,5 +61,4 @@ export default class Utils {
         return Object.keys(y).every(function (i) { return p.indexOf(i) !== -1; }) &&
             p.every(function (i) { return Utils.objectEquals(x[i], y[i]); });
     }
-    */
 }
