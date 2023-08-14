@@ -55,7 +55,7 @@ export default class PacketManager {
         await this.registerPlasmoTypes(this.bot._client);
     }
 
-    static async getProximityActivation() {
+    static getProximityActivation() {
         return this.configPacketData.activations.find(element => element.proximity === true);
     }
     

@@ -110,7 +110,7 @@ export default class PlasmoVoice {
         })
     }
 
-    async sendAudio(file: string, distance: number = 16, speed: number = 1.0, isStereo: boolean = false) {
+    async sendAudio(file: string, distance: number = 16, speed: number = 1.0, isStereo: boolean = false): Promise<void> {
         if (!fs.existsSync(file)) {
             throw new Error("File not found");
         }
@@ -120,26 +120,28 @@ export default class PlasmoVoice {
         VoiceServer.sendPCM(pcmBuffer, distance, isStereo);
     }
 
-    async sendPCM(file: string, distance: number = 16, isStereo: boolean = false) {
+    async sendPCM(file: string, distance: number = 16, isStereo: boolean = false): Promise<void> {
         VoiceServer.sendPCM(fs.readFileSync(file), distance, isStereo);
     }
 
-    async getSampleRate() {
+    getSampleRate(): number {
         return PacketManager.configPacketData.captureInfo.sampleRate;
     }
 
-    async getAllowedDistances() {
-        const proximity = await PacketManager.getProximityActivation();
+    getAllowedDistances(): number[] {
+        const proximity = PacketManager.getProximityActivation();
+        if (!proximity) { return []; }
         return proximity?.distances;
     }
 
-    async getDefaultDistance() {
-        const proximity = await PacketManager.getProximityActivation();
+    getDefaultDistance(): number {
+        const proximity = PacketManager.getProximityActivation();
+        if (!proximity) { return -1; }
         return proximity?.defaultDistance;
     }
 
     // Asked by NonemJS
-    async forceConnect() {
+    forceConnect(): void {
         PacketManager.registerAll();
     }
 
@@ -163,7 +165,7 @@ export default class PlasmoVoice {
         VoiceServer.sendBuffer(packet);
     }
 
-    async enableDebug() {
+    enableDebug(): void {
         debug = true;
     }
 }
