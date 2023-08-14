@@ -43,9 +43,10 @@ export default class VoiceServer {
                 // Sound event
                 const sourceData = PacketManager.sourceById.find(item => Utils.objectEquals(item.sourceId, data.sourceId));
 
-                // @ts-expect-error
+                if (!sourceData) { return; }
+
                 this.bot.emit("voicechat_voice", {
-                    "player": sourceData?.playerName,
+                    "player": sourceData.playerName,
                     "distance": data.distance,
                     "sequenceNumber": data.sequenceNumber,
                     "data": await PacketManager.decryptVoice(data.data)
@@ -173,7 +174,6 @@ export default class VoiceServer {
             await new Promise(r => setTimeout(r, 3));
         }
 
-        // @ts-expect-error
         this.bot.emit("voicechat_audio_end");
     }
 }

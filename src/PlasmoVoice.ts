@@ -13,7 +13,7 @@ export let debug = false;
 export default class PlasmoVoice {
 
     // System variables
-    public readonly bot: Bot;
+    private readonly bot: Bot;
 
     // Class initialization
     constructor(bot: Bot) {
@@ -70,7 +70,6 @@ export default class PlasmoVoice {
                     throw new Error(`Unsupported encryption type "${data.encryptionInfo.algorithm}"`);
                 }
 
-                // @ts-expect-error
                 this.bot.emit("voicechat_connected");
                 
                 return;
@@ -99,7 +98,6 @@ export default class PlasmoVoice {
                     return;
                 }
                 
-                // @ts-expect-error
                 this.bot.emit("voicechat_voice_end", {
                     "player": sourceData.playerName,
                     "sequenceNumber": data.sequenceNumber
@@ -145,7 +143,9 @@ export default class PlasmoVoice {
         PacketManager.registerAll();
     }
 
-    // Asked by Apehum
+    /**
+     * @deprecated The method should not be used (pro-users only)
+     */
     async _sendPacket(packetId: string, data: Object) {
         this.bot._client.writeChannel("plasmo:voice/v2",
             {
@@ -155,7 +155,9 @@ export default class PlasmoVoice {
         );
     }
 
-    // Asked by Apehum
+    /**
+     * @deprecated The method should not be used (pro-users only)
+     */
     async _sendPacketUDP(packetId: string, data: Object) {
         const packet = await PacketManager.encodeUDP(data, packetId, VoiceServer.udpSecret);
         VoiceServer.sendBuffer(packet);
