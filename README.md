@@ -71,7 +71,7 @@ bot.on("voicechat_voice_end", (data) => {
 
 ---
 
-### Known issues for fixingssss
+### Known issues
 * Max audio packet length is 48 seconds
 
 ---
