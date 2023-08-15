@@ -134,6 +134,19 @@ export default {
               }
             ]
           ],
+          "plasmovoice_PlayerStatePacket": [
+            "container",
+            [
+              {
+                "name": "voiceDisabled",
+                "type": "bool"
+              },
+              {
+                "name": "microphoneMuted",
+                "type": "bool"
+              }
+            ]
+          ],
           "plasmovoice_PlayerDisconnectPacket": [
             "container",
             [
@@ -699,6 +712,7 @@ export default {
                       "PlayerInfoUpdatePacket": "plasmovoice_PlayerInfoUpdatePacket",
                       "PlayerDisconnectPacket": "plasmovoice_PlayerDisconnectPacket",
                       "PlayerInfoPacket": "plasmovoice_PlayerInfoPacket",
+                      "PlayerStatePacket": "plasmovoice_PlayerStatePacket",
 
                       "PlayerListPacket": "plasmovoice_PlayerListPacket",
                       "SourceInfoRequestPacket": "plasmovoice_SourceInfoRequestPacket",
