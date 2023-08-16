@@ -165,16 +165,20 @@ export default class PlasmoVoice {
         VoiceServer.sendBuffer(packet);
     }
 
+    /**
+     * @deprecated The method should not be used (pro-users only)
+     */
+    async _getActivationName(activationName: string) {
+        return await VoiceServer.getActivationUUID(activationName);
+    }
+
     async updateState(microphoneMuted: boolean = false, voiceDisabled: boolean = false) {
         this.bot._client.writeChannel("plasmo:voice/v2",
             {
                 "id": "PlayerStatePacket",
                 "data": {
-                    "id": "PlayerStatePacket",
-                    "data": {
-                        "voiceDisabled": voiceDisabled,
-                        "microphoneMuted": microphoneMuted
-                    }
+                    "voiceDisabled": voiceDisabled,
+                    "microphoneMuted": microphoneMuted
                 }
             }
         );

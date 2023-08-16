@@ -119,6 +119,13 @@ export default class VoiceServer {
         return hexToUuid(md5Bytes.toString('hex'))
     }
 
+    static async getActivationUUID(activationName: string) {
+        const activation: Buffer = Buffer.from(activationName + "_activation", "utf-8");
+        const activationId: string = this.nameUUIDFromBytes(activation);
+        const activationUUID: UUID = Utils.uuidStrToSigBits(activationId);
+        return activationUUID;
+    }
+
     static async sendPCM(pcmBuffer: Buffer, distance: number = 16, isStereo: boolean = false) {
 
         // Throw an error, if previous voice is sending
@@ -133,9 +140,7 @@ export default class VoiceServer {
         const opusEncoder = new OpusEncoder(PacketManager.configPacketData.captureInfo.sampleRate, isStereo ? 2 : 1);
         const frameSize = (PacketManager.configPacketData.captureInfo.sampleRate / 1_000) * 20;
 
-        const activationName: Buffer = Buffer.from("proximity" + "_activation", "utf-8");
-        const activationId: string = this.nameUUIDFromBytes(activationName);
-        const activationUUID: UUID = Utils.uuidStrToSigBits(activationId);
+        const activationUUID = await this.getActivationUUID("proximity");
 
         // Cut pcm to frames
         const frames = [];
