@@ -113,14 +113,14 @@ export default class PacketManager {
         return Buffer.concat([iv, encrypted]);
     }
 
-    // Unused
-    static async decryptVoice(encrypted: Buffer): Promise<Buffer> {
-        const iv = encrypted.slice(0, 16);
-        const data = encrypted.slice(16);
-
+    static async decryptVoice(data: Buffer): Promise<Buffer> {
+        const iv = data.slice(0, 16);
+        const encrypted = data.slice(16);
+    
         const decipher = crypto.createDecipheriv('aes-128-cbc', this.aesKey, iv);
-        const decrypted = Buffer.concat([decipher.update(data), decipher.final()]);
-
+        const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    
         return decrypted;
     }
+    
 }
