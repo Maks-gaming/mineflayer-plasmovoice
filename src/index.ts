@@ -8,6 +8,8 @@ export function plugin(bot: Bot) {
 
 export * from './PlasmoVoice';
 
+export default plugin
+
 declare module 'mineflayer' {
     interface Bot {
         plasmovoice: PlasmoVoice;
