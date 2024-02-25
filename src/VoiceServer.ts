@@ -32,11 +32,6 @@ export default class VoiceServer {
       Utils.debug("UDP Connection closed");
     });
     this.udpClient.on("message", this.handler.bind(this));
-
-    this.opusEncoder = new OpusEncoder(
-      PacketManager.configPacketData.captureInfo.sampleRate,
-      1
-    );
   }
 
   // UDP Message handler

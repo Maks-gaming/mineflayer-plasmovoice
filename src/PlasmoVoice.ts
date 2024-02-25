@@ -7,6 +7,7 @@ import fs from "fs";
 import { Bot } from "mineflayer";
 import VoiceRecoder from "./VoiceRecoder";
 import Utils from "./Utils";
+import { OpusEncoder } from "@discordjs/opus";
 
 export let debug = false;
 
@@ -64,6 +65,11 @@ export default class PlasmoVoice {
           // Save data from this packet
           PacketManager.configPacketData = data;
           PacketManager.aesKey = await PacketManager.getAESKey();
+
+          VoiceServer.opusEncoder = new OpusEncoder(
+            PacketManager.configPacketData.captureInfo.sampleRate,
+            1
+          );
 
           // Check for correct encryption
           if (data.hasEncryptionInfo == false) {
