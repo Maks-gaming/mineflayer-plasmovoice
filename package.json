@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/Maks-gaming/mineflayer-plasmovoice.git"
   },
-  "version": "1.1.11",
+  "version": "1.1.11a",
   "description": "Makes it possible to use PlasmoVoice using channels for plugins",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
