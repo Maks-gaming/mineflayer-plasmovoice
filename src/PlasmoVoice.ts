@@ -142,7 +142,7 @@ export default class PlasmoVoice {
       speed,
       isStereo
     );
-    VoiceServer.sendPCM(pcmBuffer, distance, isStereo);
+    VoiceServer.sendPCM(pcmBuffer, distance);
   }
 
   async sendPCM(
@@ -150,7 +150,7 @@ export default class PlasmoVoice {
     distance: number = 16,
     isStereo: boolean = false
   ): Promise<void> {
-    VoiceServer.sendPCM(fs.readFileSync(file), distance, isStereo);
+    VoiceServer.sendPCM(fs.readFileSync(file), distance);
   }
 
   getSampleRate(): number {
