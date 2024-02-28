@@ -10,7 +10,3 @@ interface VoicePlayerInfo {
 	voiceDisabled: boolean;
 	microphoneMuted: boolean;
 }
-
-interface PlayerDisconnectPacket {
-	playerId: UUID;
-}
