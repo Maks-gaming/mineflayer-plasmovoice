@@ -1,13 +1,13 @@
 import PacketEncoder from "./PacketEncoder";
 
 import dgram from "dgram";
-import PingPacket from "./packets/socket/PingPacket";
-import SourceAudioPacket from "./packets/socket/SourceAudioPacket";
-import PacketManager from "./PacketManager";
-import Utils from "./utils";
 import { Bot } from "mineflayer";
+import PacketManager from "./PacketManager";
 import { log } from "./PlasmoVoice";
+import PingPacket from "./packets/socket/PingPacket";
 import PlayerAudioPacket from "./packets/socket/PlayerAudioPacket";
+import SourceAudioPacket from "./packets/socket/SourceAudioPacket";
+import Utils from "./utils";
 
 export default class SocketPacketManager {
 	private readonly bot;
@@ -29,7 +29,7 @@ export default class SocketPacketManager {
 	constructor(
 		bot: Bot,
 		packetEncoder: PacketEncoder,
-		packetManager: PacketManager
+		packetManager: PacketManager,
 	) {
 		this.bot = bot;
 		this.packetManager = packetManager;
@@ -54,19 +54,19 @@ export default class SocketPacketManager {
 		this.pingPacket = new PingPacket(
 			socket,
 			this.packetEncoder,
-			this.socketSecret!
+			this.socketSecret!,
 		);
 
 		this.sourceAudioPacket = new SourceAudioPacket(
 			socket,
 			this.packetEncoder,
-			this.socketSecret!
+			this.socketSecret!,
 		);
 
 		this.playerAudioPacket = new PlayerAudioPacket(
 			socket,
 			this.packetEncoder,
-			this.socketSecret!
+			this.socketSecret!,
 		);
 	}
 
@@ -82,12 +82,12 @@ export default class SocketPacketManager {
 		this.sourceAudioPacket!.received((data) => {
 			if (
 				this.packetManager.sourceById.some((item) =>
-					Utils.objectEquals(item.sourceId, data.sourceId)
+					Utils.objectEquals(item.sourceId, data.sourceId),
 				)
 			) {
 				// Sound event
 				const sourceData = this.packetManager.sourceById.find((item) =>
-					Utils.objectEquals(item.sourceId, data.sourceId)
+					Utils.objectEquals(item.sourceId, data.sourceId),
 				);
 
 				if (!sourceData) {
@@ -99,7 +99,7 @@ export default class SocketPacketManager {
 					distance: data.distance,
 					sequenceNumber: data.sequenceNumber,
 					data: this.packetEncoder.decodePCM(
-						this.packetEncoder.decryptPCM(data.data)
+						this.packetEncoder.decryptPCM(data.data),
 					),
 				});
 			} else {
@@ -116,7 +116,7 @@ export default class SocketPacketManager {
 	async connect(host: string, port: number, socketSecret: UUID) {
 		log.info(
 			`Connecting to socket ${host}:${port} with secret `,
-			socketSecret
+			socketSecret,
 		);
 
 		// Save data

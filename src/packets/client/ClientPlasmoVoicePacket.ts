@@ -1,5 +1,4 @@
 import { Bot } from "mineflayer";
-import { Logger } from "tslog";
 import { log } from "../../PlasmoVoice";
 
 export default abstract class ClientPlasmoVoicePacket<T> {
@@ -21,7 +20,7 @@ export default abstract class ClientPlasmoVoicePacket<T> {
 						callback(packet.data);
 					});
 				}
-			}
+			},
 		);
 	}
 

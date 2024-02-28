@@ -1,7 +1,7 @@
 import { Bot } from "mineflayer";
 import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
 
-export default class SourceInfoPacket extends ClientPlasmoVoicePacket<{
+export type SourceInfoPacketData = {
 	sourceType: string;
 	addonId: string;
 	id: UUID;
@@ -15,7 +15,8 @@ export default class SourceInfoPacket extends ClientPlasmoVoicePacket<{
 	iconVisible: boolean;
 	angle: number;
 	playerInfo: VoicePlayerInfo;
-}> {
+};
+export default class SourceInfoPacket extends ClientPlasmoVoicePacket<SourceInfoPacketData> {
 	constructor(bot: Bot) {
 		super(bot, "SourceInfoPacket");
 	}

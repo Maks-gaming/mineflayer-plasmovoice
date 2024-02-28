@@ -1,14 +1,15 @@
+import dgram from "dgram";
 import PacketEncoder from "../../PacketEncoder";
 import SocketPlasmoVoicePacket from "./SocketPlasmoVoicePacket";
-import dgram from "dgram";
 
-export default class PlayerAudioPacket extends SocketPlasmoVoicePacket<{
+export type PlayerAudioPacketData = {
 	sequenceNumber: bigint;
 	data: Buffer;
 	activationId: UUID;
 	distance: number;
 	stereo: boolean;
-}> {
+};
+export default class PlayerAudioPacket extends SocketPlasmoVoicePacket<PlayerAudioPacketData> {
 	constructor(
 		socket: {
 			client: dgram.Socket;
@@ -16,7 +17,7 @@ export default class PlayerAudioPacket extends SocketPlasmoVoicePacket<{
 			port: number;
 		},
 		packetEncoder: PacketEncoder,
-		secret: UUID
+		secret: UUID,
 	) {
 		super(socket, packetEncoder, secret, "PlayerAudioPacket");
 	}

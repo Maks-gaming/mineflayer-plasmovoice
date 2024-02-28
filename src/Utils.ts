@@ -79,7 +79,7 @@ export default class Utils {
 	static getActivationUUID(activationName: string) {
 		const activation: Buffer = Buffer.from(
 			activationName + "_activation",
-			"utf-8"
+			"utf-8",
 		);
 		const activationId: string = this.nameUUIDFromBytes(activation);
 		const activationUUID: UUID = this.uuidStrToSigBits(activationId);

@@ -1,9 +1,8 @@
 import { OpusEncoder } from "@discordjs/opus";
 import crypto from "crypto";
 import { ProtoDef } from "protodef";
-import { ConfigPacketData } from "./packets/client/ConfigPacket";
-import { Logger } from "tslog";
 import { log } from "./PlasmoVoice";
+import { ConfigPacketData } from "./packets/client/ConfigPacket";
 
 export default class PacketEncoder {
 	/** The RSA format keypair, which is required to encrypt packets in the native mod PlasmoVoice */
@@ -35,7 +34,7 @@ export default class PacketEncoder {
 
 		(this.opusEncoder as OpusEncoder) = new OpusEncoder(
 			config.captureInfo.sampleRate,
-			1
+			1,
 		);
 
 		(this.aesKey as Buffer) = crypto.privateDecrypt(
@@ -43,7 +42,7 @@ export default class PacketEncoder {
 				key: this.keyPair.privateKey,
 				padding: crypto.constants.RSA_PKCS1_PADDING,
 			},
-			config.encryptionInfo.data
+			config.encryptionInfo.data,
 		);
 
 		log.info("Initializing socket encoding tools.. [OK]");
@@ -84,7 +83,7 @@ export default class PacketEncoder {
 		const decipher = crypto.createDecipheriv(
 			"aes-128-cbc",
 			this.aesKey,
-			iv
+			iv,
 		);
 		const decrypted = Buffer.concat([
 			decipher.update(encrypted),

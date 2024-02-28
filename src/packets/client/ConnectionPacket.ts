@@ -1,12 +1,12 @@
 import { Bot } from "mineflayer";
 import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
-import PlasmoVoice from "../../PlasmoVoice";
 
-export default class ConnectionPacket extends ClientPlasmoVoicePacket<{
+export type ConnectionPacketData = {
 	secret: UUID;
 	ip: string;
 	port: number;
-}> {
+};
+export default class ConnectionPacket extends ClientPlasmoVoicePacket<ConnectionPacketData> {
 	constructor(bot: Bot) {
 		super(bot, "ConnectionPacket");
 	}

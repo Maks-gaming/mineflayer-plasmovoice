@@ -18,7 +18,7 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 		},
 		packetEncoder: PacketEncoder,
 		secret: UUID,
-		id: string
+		id: string,
 	) {
 		this.packetEncoder = packetEncoder;
 		this.socket = socket;
@@ -28,7 +28,7 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 		this.socket.client.on("message", (msg) => {
 			const packet = this.packetEncoder.protoDef.parsePacketBuffer(
 				"plasmovoiceudp_packet",
-				msg
+				msg,
 			);
 
 			if (packet.data.id != this.id) return;
@@ -58,7 +58,7 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 		const buffer = await this.packetEncoder.encodeSocket(
 			data,
 			this.id,
-			this.secret
+			this.secret,
 		);
 
 		this.socket.client.send(
@@ -71,7 +71,7 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 				if (err) {
 					console.error(`Error sending UDP message: ${err}`);
 				}
-			}
+			},
 		);
 	}
 

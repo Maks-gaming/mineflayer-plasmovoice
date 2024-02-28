@@ -1,6 +1,6 @@
 import { Bot } from "mineflayer";
-import PacketManager from "./PacketManager";
 import { Logger } from "tslog";
+import PacketManager from "./PacketManager";
 import SoundConverter from "./converter";
 
 export const log = new Logger({ minLevel: 4 });
@@ -39,9 +39,9 @@ export default class PlasmoVoice {
 		this.packetManager.socketPacketManager.sendPCM(
 			await SoundConverter.convertToPCM(
 				audio,
-				this.packetManager.config!.captureInfo.sampleRate
+				this.packetManager.config!.captureInfo.sampleRate,
 			),
-			16
+			16,
 		);
 	}
 }

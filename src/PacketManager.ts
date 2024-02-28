@@ -1,6 +1,9 @@
 import { Bot } from "mineflayer";
 import { ProtoDef } from "protodef";
 
+import PacketEncoder from "./PacketEncoder";
+import { log } from "./PlasmoVoice";
+import SocketPacketManager from "./SocketPacketManager";
 import protocol from "./data/protocol";
 import ConfigPacket, { ConfigPacketData } from "./packets/client/ConfigPacket";
 import ConnectionPacket from "./packets/client/ConnectionPacket";
@@ -9,11 +12,8 @@ import PlayerInfoRequestPacket from "./packets/client/PlayerInfoRequestPacket";
 import PlayerStatePacket from "./packets/client/PlayerStatePacket";
 import SourceAudioEndPacket from "./packets/client/SourceAudioEndPacket";
 import SourceInfoPacket from "./packets/client/SourceInfoPacket";
-import Utils from "./utils";
-import PacketEncoder from "./PacketEncoder";
 import SourceInfoRequestPacket from "./packets/client/SourceInfoRequestPacket";
-import SocketPacketManager from "./SocketPacketManager";
-import { log } from "./PlasmoVoice";
+import Utils from "./utils";
 
 export default class PacketManager {
 	private readonly bot;
@@ -52,7 +52,7 @@ export default class PacketManager {
 		this.socketPacketManager = new SocketPacketManager(
 			this.bot,
 			this.packetEncoder,
-			this
+			this,
 		);
 
 		this.bot.once("login", () => {
@@ -77,17 +77,17 @@ export default class PacketManager {
 		this.bot._client.registerChannel(
 			"plasmo:voice/v2/installed",
 			undefined,
-			true
+			true,
 		);
 		this.bot._client.registerChannel(
 			"plasmo:voice/v2/service",
 			undefined,
-			true
+			true,
 		);
 		this.bot._client.registerChannel(
 			"plasmo:voice/v2",
 			this.protoDef.types.plasmovoice_packet,
-			true
+			true,
 		);
 
 		// Types
@@ -131,8 +131,8 @@ export default class PacketManager {
 			) {
 				log.fatal(
 					new Error(
-						`Unsupported encryption type "${this.config.encryptionInfo.algorithm}"`
-					)
+						`Unsupported encryption type "${this.config.encryptionInfo.algorithm}"`,
+					),
 				);
 				process.exit();
 			}
@@ -147,7 +147,7 @@ export default class PacketManager {
 			// Don't save a player, if it's exists
 			if (
 				this.sourceById.some(
-					(item) => item.playerName == data.playerInfo.playerNick
+					(item) => item.playerName == data.playerInfo.playerNick,
 				)
 			)
 				return;
@@ -162,12 +162,12 @@ export default class PacketManager {
 		// receiving SourceAudioEndPacket => the event when the player stopped talking
 		this.sourceAudioEndPacket.received((data) => {
 			const sourceData = this.sourceById.find((item) =>
-				Utils.objectEquals(item.sourceId, data.sourceId)
+				Utils.objectEquals(item.sourceId, data.sourceId),
 			);
 
 			if (!sourceData) {
 				console.log(
-					`Unknown sourceId in SourceAudioEndPacket: ${data.sourceId}`
+					`Unknown sourceId in SourceAudioEndPacket: ${data.sourceId}`,
 				);
 				return;
 			}
@@ -185,11 +185,11 @@ export default class PacketManager {
 		this.initializeTypesPhase1();
 
 		(this.packetEncoder as PacketEncoder) = new PacketEncoder(
-			this.protoDef
+			this.protoDef,
 		);
 
 		(this.packetEncoder as PacketEncoder) = new PacketEncoder(
-			this.protoDef
+			this.protoDef,
 		);
 
 		this.initializePacketEvents();
