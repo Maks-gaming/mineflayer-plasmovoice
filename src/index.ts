@@ -10,6 +10,8 @@ export function plugin(bot: Bot) {
 	bot.plasmovoice = new PlasmoVoice(bot);
 }
 
+export * from "./PlasmoVoice";
+
 export default plugin;
 
 declare module "mineflayer" {

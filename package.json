@@ -28,7 +28,7 @@
     "crypto": "^1.0.1",
     "fluent-ffmpeg": "^2.1.2",
     "hex-to-uuid": "^1.1.1",
-    "mineflayer": "^4.14.0",
+    "mineflayer": "^4.20.0",
     "protodef": "^1.15.0",
     "tslog": "^4.9.2"
   },

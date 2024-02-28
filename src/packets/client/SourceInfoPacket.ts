@@ -1,6 +1,5 @@
 import { Bot } from "mineflayer";
 import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
-import PlasmoVoice from "../../PlasmoVoice";
 
 export default class SourceInfoPacket extends ClientPlasmoVoicePacket<{
 	sourceType: string;
