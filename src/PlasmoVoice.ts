@@ -1,232 +1,47 @@
-// Libraries
-import VoiceServer from "./VoiceServer";
-import PacketManager from "./PacketManager";
-import fs from "fs";
-
-// Types
 import { Bot } from "mineflayer";
-import VoiceRecoder from "./VoiceRecoder";
-import Utils from "./Utils";
-import { OpusEncoder } from "@discordjs/opus";
+import PacketManager from "./PacketManager";
+import { Logger } from "tslog";
+import SoundConverter from "./converter";
 
-export let debug = false;
+export const log = new Logger({ minLevel: 4 });
 
 export default class PlasmoVoice {
-  // System variables
-  private readonly bot: Bot;
+	private readonly bot;
+	private readonly packetManager;
 
-  // Class initialization
-  constructor(bot: Bot) {
-    this.bot = bot;
+	constructor(bot: Bot) {
+		this.bot = bot;
+		this.packetManager = new PacketManager(this.bot);
+	}
 
-    // Initialize packet manager
-    PacketManager.init(this.bot);
-    // Initialize voice server
-    VoiceServer.init(this.bot);
+	stopTalking() {
+		throw "Not implemented";
+	}
 
-    // Listen plugin channels
-    this.bot._client.on(
-      "plasmo:voice/v2",
-      async (packet: { id: string; data: any }) => {
-        Utils.debug(`[plasmo:voice/v2] Recieved ${packet.id}`);
+	isTalking() {
+		throw "Not implemented";
+	}
 
-        if (packet.id == "PlayerInfoRequestPacket") {
-          // PlayerInfoPacket
-          Utils.debug("[plasmo:voice/v2] Sending PlayerInfoPacket");
-          this.bot._client.writeChannel("plasmo:voice/v2", {
-            id: "PlayerInfoPacket",
-            data: {
-              voiceDisabled: false,
-              microphoneMuted: false,
-              minecraftVersion: bot.version,
-              version: "2.0.3",
-              publicKey: PacketManager.publicKey,
-            },
-          });
-          return;
-        } else if (packet.id == "ConnectionPacket") {
-          const data: ConnectionPacket = packet.data;
+	/** Allows you to turn off and turn on the microphone / listening to other players */
+	setState(microphoneMuted: boolean, voiceDisabled: boolean) {
+		this.packetManager.playerStatePacket.send({
+			voiceDisabled: voiceDisabled,
+			microphoneMuted: microphoneMuted,
+		});
+	}
 
-          // Create voice server
-          if (data.ip == "0.0.0.0") {
-            await VoiceServer.connect(
-              Utils.getHost(this.bot),
-              data.port,
-              data.secret
-            );
-          } else {
-            await VoiceServer.connect(data.ip, data.port, data.secret);
-          }
+	async sendAudio(audio: string) {
+		if (!this.packetManager.socketPacketManager) {
+			log.error("Voice chat has not been launched yet!");
+			return;
+		}
 
-          return;
-        } else if (packet.id == "ConfigPacket") {
-          const data: ConfigPacket = packet.data;
-
-          // Save data from this packet
-          PacketManager.configPacketData = data;
-          PacketManager.aesKey = await PacketManager.getAESKey();
-
-          VoiceServer.opusEncoder = new OpusEncoder(
-            PacketManager.configPacketData.captureInfo.sampleRate,
-            1
-          );
-
-          // Check for correct encryption
-          if (data.hasEncryptionInfo == false) {
-            throw new Error(`Encryption is disabled`);
-          } else if (data.encryptionInfo.algorithm != "AES/CBC/PKCS5Padding") {
-            throw new Error(
-              `Unsupported encryption type "${data.encryptionInfo.algorithm}"`
-            );
-          }
-
-          this.bot.emit("voicechat_connected");
-
-          return;
-        } else if (packet.id == "SourceInfoPacket") {
-          const data: SourceInfoPacket = packet.data;
-
-          // Don't save a player, if it's exists
-          if (
-            PacketManager.sourceById.some(
-              (item) => item.playerName == data.playerInfo.playerNick
-            )
-          ) {
-            return;
-          }
-
-          PacketManager.sourceById.push({
-            sourceId: data.id,
-            playerName: data.playerInfo.playerNick,
-          });
-
-          Utils.debug(PacketManager.sourceById);
-
-          return;
-        } else if (packet.id == "SourceAudioEndPacket") {
-          const data: SourceAudioEndPacket = packet.data;
-
-          const sourceData = PacketManager.sourceById.find((item) =>
-            Utils.objectEquals(item.sourceId, data.sourceId)
-          );
-          if (!sourceData) {
-            Utils.debug(`Unknown sourceId in SourceAudioEndPacket`);
-            return;
-          }
-
-          this.bot.emit("voicechat_voice_end", {
-            player: sourceData.playerName,
-            sequenceNumber: data.sequenceNumber,
-          });
-
-          return;
-        }
-
-        Utils.debug(`[plasmo:voice/v2] Skipped ${packet.id}`);
-      }
-    );
-  }
-
-  async isVoiceChannelBusy() {
-    return Date.now() - VoiceServer.voiceLastTimestamp < 3 * 1.5;
-  }
-
-  async sendAudio(
-    file: string,
-    distance: number = 16,
-    speed: number = 1.0,
-    isStereo: boolean = false
-  ): Promise<void> {
-    if (!fs.existsSync(file)) {
-      throw new Error("File not found");
-    }
-
-    Utils.debug("[sendAudio] Converting given soundfile to PCM");
-    var pcmBuffer = await VoiceRecoder.convertToPCM(
-      file,
-      PacketManager.configPacketData.captureInfo.sampleRate,
-      speed,
-      isStereo
-    );
-    VoiceServer.sendPCM(pcmBuffer, distance);
-  }
-
-  async sendPCM(
-    file: string,
-    distance: number = 16,
-    isStereo: boolean = false
-  ): Promise<void> {
-    VoiceServer.sendPCM(fs.readFileSync(file), distance);
-  }
-
-  getSampleRate(): number {
-    return PacketManager.configPacketData.captureInfo.sampleRate;
-  }
-
-  getAllowedDistances(): number[] {
-    const proximity = PacketManager.getProximityActivation();
-    if (!proximity) {
-      return [];
-    }
-    return proximity?.distances;
-  }
-
-  getDefaultDistance(): number {
-    const proximity = PacketManager.getProximityActivation();
-    if (!proximity) {
-      return -1;
-    }
-    return proximity?.defaultDistance;
-  }
-
-  // Asked by NonemJS
-  forceConnect(): void {
-    PacketManager.registerAll();
-  }
-
-  /**
-   * @deprecated The method should not be used (pro-users only)
-   */
-  async _sendPacket(packetId: string, data: Object) {
-    this.bot._client.writeChannel("plasmo:voice/v2", {
-      id: packetId,
-      data: data,
-    });
-  }
-
-  /**
-   * @deprecated The method should not be used (pro-users only)
-   */
-  async _sendPacketUDP(packetId: string, data: Object) {
-    const packet = await PacketManager.encodeUDP(
-      data,
-      packetId,
-      VoiceServer.udpSecret
-    );
-    VoiceServer.sendBuffer(packet);
-  }
-
-  /**
-   * @deprecated The method should not be used (pro-users only)
-   */
-  async _getActivationName(activationName: string) {
-    return await VoiceServer.getActivationUUID(activationName);
-  }
-
-  async updateState(
-    microphoneMuted: boolean = false,
-    voiceDisabled: boolean = false
-  ) {
-    this.bot._client.writeChannel("plasmo:voice/v2", {
-      id: "PlayerStatePacket",
-      data: {
-        voiceDisabled: voiceDisabled,
-        microphoneMuted: microphoneMuted,
-      },
-    });
-  }
-
-  enableDebug(): void {
-    debug = true;
-  }
+		this.packetManager.socketPacketManager.sendPCM(
+			await SoundConverter.convertToPCM(
+				audio,
+				this.packetManager.config!.captureInfo.sampleRate
+			),
+			16
+		);
+	}
 }
