@@ -134,7 +134,9 @@ export default class SocketPacketManager {
 
 	async sendPCM(pcmBuffer: Buffer, distance: number) {
 		const frameSize =
-			(this.packetManager.config!.captureInfo.sampleRate / 1_000) * 20;
+			(this.packetManager.config!.captureInfo.sampleRate / 1_000) *
+			20 *
+			2; // 1920
 
 		const activationUUID = Utils.getActivationUUID("proximity");
 
@@ -165,7 +167,7 @@ export default class SocketPacketManager {
 				stereo: false,
 			});
 
-			await new Promise((r) => setTimeout(r, 3));
+			await new Promise((r) => setTimeout(r, 7));
 		}
 
 		this.bot.emit("plasmovoice_audio_end");
