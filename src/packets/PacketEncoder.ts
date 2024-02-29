@@ -77,8 +77,8 @@ export default class PacketEncoder {
 	}
 
 	decryptPCM(data: Buffer): Buffer {
-		const iv = data.slice(0, 16);
-		const encrypted = data.slice(16);
+		const iv = data.subarray(0, 16);
+		const encrypted = data.subarray(16);
 
 		const decipher = crypto.createDecipheriv(
 			"aes-128-cbc",
