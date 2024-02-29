@@ -1,14 +1,13 @@
 {
-  "compilerOptions": {
-      "declaration": true,
-      "esModuleInterop": true,
-      "lib": ["ES2022"],
-      "module": "commonjs",
-      "outDir": "./lib",
-      "skipLibCheck": true,
-      "strict": true,
-      "target": "ES2022",
-      "removeComments": true
-  },
-  "include": ["./src"]
+	"compilerOptions": {
+		"declaration": true,
+		"esModuleInterop": true,
+		"lib": ["ES2022"],
+		"module": "commonjs",
+		"outDir": "./lib",
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ES2022"
+	},
+	"include": ["./src"]
 }
