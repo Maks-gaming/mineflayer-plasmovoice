@@ -48,7 +48,11 @@ export default class PlasmoVoice {
 			return -1;
 		}
 
-		return this.packetManager.config.activations[0].defaultDistance;
+		const activation = this.packetManager.config.activations.find(
+			(value) => value.name === "proximity",
+		)!;
+
+		return activation.defaultDistance;
 	}
 
 	getAllowedDistances() {
