@@ -1,19 +1,19 @@
 import { Bot } from "mineflayer";
 import { ProtoDef } from "protodef";
 
+import { log } from "../PlasmoVoice";
+import Utils from "../Utils";
+import protocol from "../data/protocol";
 import PacketEncoder from "./PacketEncoder";
-import { log } from "./PlasmoVoice";
 import SocketPacketManager from "./SocketPacketManager";
-import protocol from "./data/protocol";
-import ConfigPacket, { ConfigPacketData } from "./packets/client/ConfigPacket";
-import ConnectionPacket from "./packets/client/ConnectionPacket";
-import PlayerInfoPacket from "./packets/client/PlayerInfoPacket";
-import PlayerInfoRequestPacket from "./packets/client/PlayerInfoRequestPacket";
-import PlayerStatePacket from "./packets/client/PlayerStatePacket";
-import SourceAudioEndPacket from "./packets/client/SourceAudioEndPacket";
-import SourceInfoPacket from "./packets/client/SourceInfoPacket";
-import SourceInfoRequestPacket from "./packets/client/SourceInfoRequestPacket";
-import Utils from "./utils";
+import ConfigPacket, { ConfigPacketData } from "./client/ConfigPacket";
+import ConnectionPacket from "./client/ConnectionPacket";
+import PlayerInfoPacket from "./client/PlayerInfoPacket";
+import PlayerInfoRequestPacket from "./client/PlayerInfoRequestPacket";
+import PlayerStatePacket from "./client/PlayerStatePacket";
+import SourceAudioEndPacket from "./client/SourceAudioEndPacket";
+import SourceInfoPacket from "./client/SourceInfoPacket";
+import SourceInfoRequestPacket from "./client/SourceInfoRequestPacket";
 
 export default class PacketManager {
 	private readonly bot;

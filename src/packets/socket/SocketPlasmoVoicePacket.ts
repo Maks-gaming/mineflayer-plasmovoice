@@ -1,6 +1,6 @@
 import dgram from "dgram";
-import PacketEncoder from "../../PacketEncoder";
 import { log } from "../../PlasmoVoice";
+import PacketEncoder from "../PacketEncoder";
 
 export default abstract class SocketPlasmoVoicePacket<T extends object> {
 	private readonly packetEncoder;

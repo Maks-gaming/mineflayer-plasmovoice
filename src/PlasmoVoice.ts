@@ -1,7 +1,7 @@
 import { Bot } from "mineflayer";
 import { Logger } from "tslog";
-import PacketManager from "./PacketManager";
 import SoundConverter from "./converter";
+import PacketManager from "./packets/PacketManager";
 
 export const log = new Logger({ minLevel: 4 });
 

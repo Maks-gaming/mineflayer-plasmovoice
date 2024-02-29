@@ -1,8 +1,8 @@
 import { OpusEncoder } from "@discordjs/opus";
 import crypto from "crypto";
 import { ProtoDef } from "protodef";
-import { log } from "./PlasmoVoice";
-import { ConfigPacketData } from "./packets/client/ConfigPacket";
+import { log } from "../PlasmoVoice";
+import { ConfigPacketData } from "./client/ConfigPacket";
 
 export default class PacketEncoder {
 	/** The RSA format keypair, which is required to encrypt packets in the native mod PlasmoVoice */

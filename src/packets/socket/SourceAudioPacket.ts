@@ -1,5 +1,5 @@
 import dgram from "dgram";
-import PacketEncoder from "../../PacketEncoder";
+import PacketEncoder from "../PacketEncoder";
 import SocketPlasmoVoicePacket from "./SocketPlasmoVoicePacket";
 
 export type SourceAudioPacketData = {

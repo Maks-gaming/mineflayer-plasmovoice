@@ -2,12 +2,12 @@ import PacketEncoder from "./PacketEncoder";
 
 import dgram from "dgram";
 import { Bot } from "mineflayer";
+import { log } from "../PlasmoVoice";
+import Utils from "../Utils";
 import PacketManager from "./PacketManager";
-import { log } from "./PlasmoVoice";
-import Utils from "./Utils";
-import PingPacket from "./packets/socket/PingPacket";
-import PlayerAudioPacket from "./packets/socket/PlayerAudioPacket";
-import SourceAudioPacket from "./packets/socket/SourceAudioPacket";
+import PingPacket from "./socket/PingPacket";
+import PlayerAudioPacket from "./socket/PlayerAudioPacket";
+import SourceAudioPacket from "./socket/SourceAudioPacket";
 
 export default class SocketPacketManager {
 	private readonly bot;
