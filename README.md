@@ -42,7 +42,7 @@ bot.on("plasmovoice_audio_end", () => {
 ```js
 const plasmo = require("mineflayer-plasmovoice")
 
-/** By default - 4, and these are warnings, errors and fatal */
+/** By default - 4, and these are warnings, errors and fatal errors */
 plasmo.setLoggingLevel(0)
 ```
 

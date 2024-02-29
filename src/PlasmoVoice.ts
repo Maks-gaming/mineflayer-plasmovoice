@@ -16,8 +16,8 @@ export default class PlasmoVoice {
 
 	/** The method that interrupts sending audio to voice chat */
 	stopTalking() {
-		if (!this.packetManager.socketPacketManager.socketClient) {
-			log.error("Voice chat has not been launched yet!");
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
 
@@ -26,8 +26,8 @@ export default class PlasmoVoice {
 
 	/** A method that checks if audio is being sent at the moment */
 	isTalking() {
-		if (!this.packetManager.socketPacketManager.socketClient) {
-			log.error("Voice chat has not been launched yet!");
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
 
@@ -42,10 +42,32 @@ export default class PlasmoVoice {
 		});
 	}
 
-	// TODO: Improve this
-	async sendAudio(audio: string) {
+	getDefaultDistance() {
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
+			return -1;
+		}
+
+		return this.packetManager.config.activations[0].defaultDistance;
+	}
+
+	getAllowedDistances() {
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
+			return [];
+		}
+
+		return this.packetManager.config.activations[0].distances;
+	}
+
+	async sendAudio(audio: string, distance: number | undefined) {
 		if (!this.packetManager.socketPacketManager) {
-			log.error("Voice chat has not been launched yet!");
+			log.error(new Error("Voice chat is not launched!"));
+			return;
+		}
+
+		if (distance && !this.getAllowedDistances().includes(distance)) {
+			log.error(new Error(`Distance ${distance} is not allowed!`));
 			return;
 		}
 
@@ -54,7 +76,7 @@ export default class PlasmoVoice {
 				audio,
 				this.packetManager.config!.captureInfo.sampleRate,
 			),
-			16,
+			distance ?? this.getDefaultDistance(),
 		);
 	}
 }

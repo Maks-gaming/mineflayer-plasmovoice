@@ -125,8 +125,10 @@ export default class PacketManager {
 			if (this.config.hasEncryptionInfo == false) {
 				// FEAT: Support disabled encryption
 				log.fatal(new Error(`Encryption is disabled`));
-				process.exit();
-			} else if (
+				return;
+			}
+
+			if (
 				this.config.encryptionInfo.algorithm != "AES/CBC/PKCS5Padding"
 			) {
 				log.fatal(
@@ -134,7 +136,12 @@ export default class PacketManager {
 						`Unsupported encryption type "${this.config.encryptionInfo.algorithm}"`,
 					),
 				);
-				process.exit();
+				return;
+			}
+
+			if (!this.config!.activations[0].proximity) {
+				log.fatal(new Error(`Proximity activation not found`));
+				return;
 			}
 
 			this.packetEncoder.initialize(data);
