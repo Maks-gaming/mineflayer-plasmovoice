@@ -34,8 +34,10 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 			if (packet.data.id != this.id) return;
 
 			this.callbacks.forEach((callback) => {
-				log.debug("(Socket) =>", packet.data.id);
-				log.silly(packet.data.data);
+				if (this.id != "PingPacket") {
+					log.debug("(Socket) =>", packet.data.id);
+					log.silly(packet.data.data);
+				}
 
 				callback(packet.data.data);
 			});
@@ -51,7 +53,8 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 
 	public async send(data: T): Promise<void> {
 		if (this.id != "PingPacket") {
-			log.debug(this.id, "<=", data);
+			log.debug("(Socket) <=", this.id);
+			log.silly(data);
 		}
 
 		const buffer = await this.packetEncoder.encodeSocket(

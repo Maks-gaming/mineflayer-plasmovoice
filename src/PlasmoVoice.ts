@@ -16,7 +16,7 @@ export default class PlasmoVoice {
 
 	/** The method that interrupts sending audio to voice chat */
 	stopTalking() {
-		if (!this.packetManager.socketPacketManager) {
+		if (!this.packetManager.socketPacketManager.socketClient) {
 			log.error("Voice chat has not been launched yet!");
 			return;
 		}
@@ -26,7 +26,7 @@ export default class PlasmoVoice {
 
 	/** A method that checks if audio is being sent at the moment */
 	isTalking() {
-		if (!this.packetManager.socketPacketManager) {
+		if (!this.packetManager.socketPacketManager.socketClient) {
 			log.error("Voice chat has not been launched yet!");
 			return;
 		}

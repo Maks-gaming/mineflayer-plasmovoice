@@ -4,10 +4,9 @@
 # Features
 - 🔥 Supports **CommonJS** and **ES6**
 - 🔈 Allows to send any soundfile formats using **FFMPEG**
-- 🔒 Supports **AES-128-CBC** and **RSA** Encryption
-- 🎵 Supports sending **Stereo** audio
+- 🔒 Works with **AES-128-CBC** and **RSA** Encryption
 - 👀 Almost exactly mimics the behavior of the original mod
-- 🖧 Using **ProtoDef** instead old cursoredBuffer
+- 🖧 Using **ProtoDef** to assemble the packets
 - 📎 Supports "**/vrc**" command
 - ↗ Automatically reconnects in case of connection loss
 
@@ -16,7 +15,7 @@
 1) This plugin is built using Node and can be installed using: ```npm install mineflayer-plasmovoice --save```
 
 #### Simple Sound Player
-A bot that sneaks will play a certain sound (music.mp3) and get up.
+A bot that sneaks will play a certain sound (/path/to/music.mp3) and get up.
 ```js
 const mineflayer = require("mineflayer")
 const plasmo = require("mineflayer-plasmovoice")
@@ -25,31 +24,32 @@ const bot = mineflayer.createBot({
     "host": "localhost"
 })
 
-bot.loadPlugin(plasmo.plugin)
+bot.loadPlugin(plasmo)
 
-bot.on("voicechat_connected", () => {
+bot.on("plasmovoice_connected", () => {
     bot.setControlState("sneak", true)
 
     // Path to file with any audio format
-    bot.plasmovoice.sendAudio("music.mp3")
+    bot.plasmovoice.sendAudio("/path/to/music.mp3")
 })
 
-bot.on("voicechat_audio_end", () => {
+bot.on("plasmovoice_audio_end", () => {
     bot.setControlState("sneak", false)
 })
 ```
 
-#### Enabling debugging
+#### Debugging
 ```js
-bot.on("login", () => {
-    bot.plasmovoice.enableDebug();
-})
+const plasmo = require("mineflayer-plasmovoice")
+
+/** By default - 4, and these are warnings, errors and fatal */
+plasmo.setLoggingLevel(0)
 ```
 
 #### Listening players
 > An example of an event when some player is talking
 ```js
-bot.on("voicechat_voice", (data) => {
+bot.on("plasmovoice_voice", (data) => {
     /*{
         player: string,
         distance: number
@@ -61,7 +61,7 @@ bot.on("voicechat_voice", (data) => {
 
 > An example of an event when some player stopped talking
 ```js
-bot.on("voicechat_voice_end", (data) => {
+bot.on("plasmovoice_voice_end", (data) => {
     /*{
         player: string,
         sequenceNumber: BigInt
@@ -71,19 +71,14 @@ bot.on("voicechat_voice_end", (data) => {
 
 ---
 
-# Known issues
-* Max audio packet length is 48 seconds
-
----
-
 # License
 This project uses the [MIT](https://github.com/Maks-gaming/mineflayer-plasmovoice/blob/master/LICENSE) license.
 
 ---
 
 # Contributors:
-- ↗ Maks-gaming (Maksim Klimenko) - The idea and implementation of the plugin structure;
-- 📎 CralixRaev (Anatoly Raev) - Pushed in the right direction, helped to deal with **ProtoDef** and old cursoredBuffer;
+- ↗ Maks-gaming - The idea and implementation of the plugin structure;
+- 📎 CralixRaev - Helped to deal with **ProtoDef**;
 - 🔥 Plasmo R&D - helped to understand some things in the packet system;
 
 > This project is accepting PRs and Issues. See something you think can be improved? Go for it! Any and all help is highly appreciated!

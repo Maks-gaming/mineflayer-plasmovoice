@@ -14,7 +14,7 @@ export default class SocketPacketManager {
 	private readonly packetManager;
 	private readonly packetEncoder;
 
-	private socketClient: dgram.Socket | undefined;
+	socketClient: dgram.Socket | undefined;
 	private socketSecret: UUID | undefined;
 	private host: string | undefined;
 	private port: number | undefined;
@@ -142,6 +142,7 @@ export default class SocketPacketManager {
 
 	stopTalking() {
 		this.stopFlag = true;
+		console.log(this.stopFlag);
 	}
 
 	async sendPCM(pcmBuffer: Buffer, distance: number) {
@@ -155,20 +156,21 @@ export default class SocketPacketManager {
 		const frameSize =
 			(this.packetManager.config!.captureInfo.sampleRate / 1_000) *
 			20 *
-			2; // 1920
+			2;
 
 		const activationUUID = Utils.getActivationUUID("proximity");
 
 		// Cut pcm to frames
 		const frames = [];
 		for (let i = 0; i < pcmBuffer.length; i += frameSize) {
-			const frame = pcmBuffer.slice(i, i + frameSize);
+			const frame = pcmBuffer.subarray(i, i + frameSize);
 			frames.push(frame);
 		}
 
 		for (let i = 0; i < frames.length; i++) {
 			// Stopping method
 			if (this.stopFlag) {
+				log.info("Voice interrupted");
 				break;
 			}
 
