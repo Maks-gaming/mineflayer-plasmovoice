@@ -139,11 +139,6 @@ export default class PacketManager {
 				return;
 			}
 
-			if (!this.config!.activations[0].proximity) {
-				log.fatal(new Error(`Proximity activation not found`));
-				return;
-			}
-
 			this.packetEncoder.initialize(data);
 
 			this.bot.emit("plasmovoice_connected");
