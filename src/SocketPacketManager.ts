@@ -4,10 +4,10 @@ import dgram from "dgram";
 import { Bot } from "mineflayer";
 import PacketManager from "./PacketManager";
 import { log } from "./PlasmoVoice";
+import Utils from "./Utils";
 import PingPacket from "./packets/socket/PingPacket";
 import PlayerAudioPacket from "./packets/socket/PlayerAudioPacket";
 import SourceAudioPacket from "./packets/socket/SourceAudioPacket";
-import Utils from "./utils";
 
 export default class SocketPacketManager {
 	private readonly bot;
@@ -132,7 +132,26 @@ export default class SocketPacketManager {
 		});
 	}
 
+	private lastPlayerAudioPacketTimestamp = 0;
+
+	public stopFlag = false;
+
+	isTalking() {
+		return Date.now() - this.lastPlayerAudioPacketTimestamp < 3 * 1.5;
+	}
+
+	stopTalking() {
+		this.stopFlag = true;
+	}
+
 	async sendPCM(pcmBuffer: Buffer, distance: number) {
+		this.stopFlag = false;
+
+		if (Date.now() - this.lastPlayerAudioPacketTimestamp < 3 * 1.5) {
+			log.error(new Error("Voice channel is busy"));
+			return;
+		}
+
 		const frameSize =
 			(this.packetManager.config!.captureInfo.sampleRate / 1_000) *
 			20 *
@@ -148,6 +167,11 @@ export default class SocketPacketManager {
 		}
 
 		for (let i = 0; i < frames.length; i++) {
+			// Stopping method
+			if (this.stopFlag) {
+				break;
+			}
+
 			const frame = frames[i];
 
 			// Last frame (by default is empty or silent)
@@ -167,7 +191,9 @@ export default class SocketPacketManager {
 				stereo: false,
 			});
 
-			await new Promise((r) => setTimeout(r, 7));
+			this.lastPlayerAudioPacketTimestamp = Date.now();
+
+			await new Promise((r) => setTimeout(r, 10));
 		}
 
 		this.bot.emit("plasmovoice_audio_end");

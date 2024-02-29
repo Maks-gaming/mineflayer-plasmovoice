@@ -34,9 +34,8 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 			if (packet.data.id != this.id) return;
 
 			this.callbacks.forEach((callback) => {
-				if (this.id != "PingPacket") {
-					log.debug(packet.data.id, "=>", packet.data.data);
-				}
+				log.debug("(Socket) =>", packet.data.id);
+				log.silly(packet.data.data);
 
 				callback(packet.data.data);
 			});

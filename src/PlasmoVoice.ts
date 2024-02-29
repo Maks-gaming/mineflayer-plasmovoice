@@ -14,12 +14,24 @@ export default class PlasmoVoice {
 		this.packetManager = new PacketManager(this.bot);
 	}
 
+	/** The method that interrupts sending audio to voice chat */
 	stopTalking() {
-		throw "Not implemented";
+		if (!this.packetManager.socketPacketManager) {
+			log.error("Voice chat has not been launched yet!");
+			return;
+		}
+
+		return this.packetManager.socketPacketManager.stopTalking();
 	}
 
+	/** A method that checks if audio is being sent at the moment */
 	isTalking() {
-		throw "Not implemented";
+		if (!this.packetManager.socketPacketManager) {
+			log.error("Voice chat has not been launched yet!");
+			return;
+		}
+
+		return this.packetManager.socketPacketManager.isTalking();
 	}
 
 	/** Allows you to turn off and turn on the microphone / listening to other players */
@@ -30,6 +42,7 @@ export default class PlasmoVoice {
 		});
 	}
 
+	// TODO: Improve this
 	async sendAudio(audio: string) {
 		if (!this.packetManager.socketPacketManager) {
 			log.error("Voice chat has not been launched yet!");

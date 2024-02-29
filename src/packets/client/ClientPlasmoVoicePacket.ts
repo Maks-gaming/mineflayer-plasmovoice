@@ -16,7 +16,9 @@ export default abstract class ClientPlasmoVoicePacket<T> {
 			(packet: { id: string; data: any }) => {
 				if (this.packetId === packet.id) {
 					this.callbacks.forEach((callback) => {
-						log.debug(packet.id, "=>", packet.data);
+						log.debug("(Client) =>", packet.data.id);
+						log.silly(packet.data);
+
 						callback(packet.data);
 					});
 				}
