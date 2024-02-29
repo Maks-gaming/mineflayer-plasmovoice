@@ -57,7 +57,11 @@ export default class PlasmoVoice {
 			return [];
 		}
 
-		return this.packetManager.config.activations[0].distances;
+		const activation = this.packetManager.config.activations.find(
+			(value) => value.name === "proximity",
+		)!;
+
+		return activation.distances;
 	}
 
 	async sendAudio(audio: string, distance: number | undefined) {

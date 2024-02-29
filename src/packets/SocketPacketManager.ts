@@ -142,7 +142,6 @@ export default class SocketPacketManager {
 
 	stopTalking() {
 		this.stopFlag = true;
-		console.log(this.stopFlag);
 	}
 
 	async sendPCM(pcmBuffer: Buffer, distance: number) {
