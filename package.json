@@ -27,14 +27,12 @@
 		"@ffmpeg-installer/ffmpeg": "^1.1.0",
 		"crypto": "^1.0.1",
 		"fluent-ffmpeg": "^2.1.2",
-		"hex-to-uuid": "^1.1.1",
 		"mineflayer": "^4.20.0",
 		"protodef": "^1.15.0",
 		"tslog": "^4.9.2"
 	},
 	"devDependencies": {
 		"@types/fluent-ffmpeg": "^2.1.21",
-		"@types/hex-to-uuid": "^1.1.0",
 		"@types/node": "^20.0.0",
 		"prettier-plugin-organize-imports": "^3.2.4",
 		"require-self": "^0.2.3",

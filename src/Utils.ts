@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import hexToUuid from "hex-to-uuid";
 
 export default class Utils {
 	static objectEquals(x: any, y: any): boolean {
@@ -59,7 +58,12 @@ export default class Utils {
 		md5Bytes[6] |= 0x30; // set to version 3
 		md5Bytes[8] &= 0x3f; // clear variant
 		md5Bytes[8] |= 0x80; // set to IETF variant
-		return hexToUuid(md5Bytes.toString("hex"));
+		const hex = md5Bytes.toString("hex");
+		const uuid = hex.replace(
+			/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/,
+			"$1-$2-$3-$4-$5",
+		);
+		return uuid;
 	}
 
 	static uuidStrToSigBits(uuid: string): UUID {
