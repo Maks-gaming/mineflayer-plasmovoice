@@ -67,7 +67,7 @@ export default class PacketEncoder {
 		return out;
 	}
 
-	encryptSound(data: Buffer): Buffer {
+	encryptOpus(data: Buffer): Buffer {
 		const iv = crypto.randomBytes(16);
 
 		const cipher = crypto.createCipheriv("aes-128-cbc", this.aesKey, iv);
@@ -76,7 +76,7 @@ export default class PacketEncoder {
 		return Buffer.concat([iv, encrypted]);
 	}
 
-	decryptPCM(data: Buffer): Buffer {
+	decryptOpus(data: Buffer): Buffer {
 		const iv = data.subarray(0, 16);
 		const encrypted = data.subarray(16);
 

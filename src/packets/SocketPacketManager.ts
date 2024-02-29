@@ -99,7 +99,7 @@ export default class SocketPacketManager {
 					distance: data.distance,
 					sequenceNumber: data.sequenceNumber,
 					data: this.packetEncoder.decodePCM(
-						this.packetEncoder.decryptPCM(data.data),
+						this.packetEncoder.decryptOpus(data.data),
 					),
 				});
 			} else {
@@ -180,7 +180,7 @@ export default class SocketPacketManager {
 			}
 
 			const opus = this.packetEncoder.encodePCM(frame);
-			const ecryptedOpus = this.packetEncoder.encryptSound(opus);
+			const ecryptedOpus = this.packetEncoder.encryptOpus(opus);
 
 			// PlayerAudioPacket
 			await this.playerAudioPacket!.send({
