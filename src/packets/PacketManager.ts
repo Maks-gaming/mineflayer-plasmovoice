@@ -168,8 +168,8 @@ export default class PacketManager {
 			);
 
 			if (!sourceData) {
-				console.log(
-					`Unknown sourceId in SourceAudioEndPacket: ${data.sourceId}`,
+				log.warn(
+					`Unknown sourceId in SourceAudioEndPacket: ${data.sourceId}, ignoring`,
 				);
 				return;
 			}
