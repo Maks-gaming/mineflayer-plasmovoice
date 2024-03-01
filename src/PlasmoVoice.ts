@@ -69,7 +69,7 @@ export default class PlasmoVoice {
 	}
 
 	async sendAudio(audio: string, distance: number | undefined) {
-		if (!this.packetManager.socketPacketManager) {
+		if (!this.packetManager.config) {
 			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
