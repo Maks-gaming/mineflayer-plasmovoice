@@ -45,9 +45,9 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 
 		// Stop UDP when program finish (for some reasons UDP can break after restart)
 		process.on("SIGINT", () => {
-			this.socket.client.close(() => {
-				process.exit(0);
-			});
+			try {
+				this.socket.client.close();
+			} catch {}
 		});
 	}
 
