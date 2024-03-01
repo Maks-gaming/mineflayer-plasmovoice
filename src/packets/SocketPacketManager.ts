@@ -137,17 +137,27 @@ export default class SocketPacketManager {
 	public stopFlag = false;
 
 	isTalking() {
-		return Date.now() - this.lastPlayerAudioPacketTimestamp < 3 * 1.5;
+		return Date.now() - this.lastPlayerAudioPacketTimestamp < 15 * 1.5;
 	}
 
-	stopTalking() {
+	async stopTalking(): Promise<void> {
+		if (!this.isTalking()) {
+			return;
+		}
+
 		this.stopFlag = true;
+		return await new Promise((resolve) =>
+			this.bot.once("plasmovoice_audio_end", () => {
+				this.stopFlag = false;
+				resolve(undefined);
+			}),
+		);
 	}
 
 	async sendPCM(pcmBuffer: Buffer, distance: number) {
 		this.stopFlag = false;
 
-		if (Date.now() - this.lastPlayerAudioPacketTimestamp < 3 * 1.5) {
+		if (this.isTalking()) {
 			log.error(new Error("Voice channel is busy"));
 			return;
 		}
@@ -194,7 +204,7 @@ export default class SocketPacketManager {
 
 			this.lastPlayerAudioPacketTimestamp = Date.now();
 
-			await new Promise((r) => setTimeout(r, 10));
+			await new Promise((r) => setTimeout(r, 15));
 		}
 
 		this.bot.emit("plasmovoice_audio_end");
