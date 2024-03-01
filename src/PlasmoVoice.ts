@@ -42,39 +42,64 @@ export default class PlasmoVoice {
 		});
 	}
 
-	getDefaultDistance() {
-		if (!this.packetManager.config) {
-			log.error(new Error("Voice chat is not launched!"));
-			return -1;
-		}
-
-		const activation = this.packetManager.config.activations.find(
-			(value) => value.name === "proximity",
-		)!;
-
-		return activation.defaultDistance;
-	}
-
-	getAllowedDistances() {
+	/** Returns a list of Activations (channels where the plugin can send an audio stream) */
+	getActivations(): string[] {
 		if (!this.packetManager.config) {
 			log.error(new Error("Voice chat is not launched!"));
 			return [];
 		}
 
-		const activation = this.packetManager.config.activations.find(
-			(value) => value.name === "proximity",
-		)!;
-
-		return activation.distances;
+		return this.packetManager.config.activations.map((item) => item.name);
 	}
 
-	async sendAudio(audio: string, distance: number | undefined) {
+	/** Returns the default distance around the player
+	 * @argument activation by default is "proximity"
+	 */
+	getDefaultDistance(activation?: string | undefined) {
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
+			return -1;
+		}
+
+		const activationData = this.packetManager.config.activations.find(
+			(value) => value.name === activation ?? "proximity",
+		)!;
+
+		return activationData.defaultDistance;
+	}
+
+	/** Returns allowed distances for activation
+	 * @argument activation by default is "proximity"
+	 */
+	getAllowedDistances(activation?: string | undefined) {
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
+			return [];
+		}
+
+		const activationData = this.packetManager.config.activations.find(
+			(value) => value.name === activation ?? "proximity",
+		)!;
+
+		return activationData.distances;
+	}
+
+	async sendAudio(
+		audio: string,
+		distance?: number | undefined,
+		activation?: string | undefined,
+	) {
 		if (!this.packetManager.config) {
 			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
 
-		if (distance && !this.getAllowedDistances().includes(distance)) {
+		if (
+			distance &&
+			!this.getAllowedDistances(activation ?? "proximity").includes(
+				distance,
+			)
+		) {
 			log.error(new Error(`Distance ${distance} is not allowed!`));
 			return;
 		}
@@ -84,7 +109,8 @@ export default class PlasmoVoice {
 				audio,
 				this.packetManager.config!.captureInfo.sampleRate,
 			),
-			distance ?? this.getDefaultDistance(),
+			distance ?? this.getDefaultDistance(activation ?? "proximity"),
+			activation ?? "proximity",
 		);
 	}
 }

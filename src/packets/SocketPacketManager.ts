@@ -154,7 +154,7 @@ export default class SocketPacketManager {
 		);
 	}
 
-	async sendPCM(pcmBuffer: Buffer, distance: number) {
+	async sendPCM(pcmBuffer: Buffer, distance: number, activation: string) {
 		this.stopFlag = false;
 
 		if (this.isTalking()) {
@@ -167,7 +167,7 @@ export default class SocketPacketManager {
 			20 *
 			2;
 
-		const activationUUID = Utils.getActivationUUID("proximity");
+		const activationUUID = Utils.getActivationUUID(activation);
 
 		// Cut pcm to frames
 		const frames = [];
