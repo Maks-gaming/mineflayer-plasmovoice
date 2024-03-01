@@ -204,7 +204,7 @@ export default class SocketPacketManager {
 
 			this.lastPlayerAudioPacketTimestamp = Date.now();
 
-			await new Promise((r) => setTimeout(r, 15));
+			await new Promise((r) => setTimeout(r, 10));
 		}
 
 		this.bot.emit("plasmovoice_audio_end");
