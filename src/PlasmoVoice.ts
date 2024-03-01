@@ -15,13 +15,13 @@ export default class PlasmoVoice {
 	}
 
 	/** The method that interrupts sending audio to voice chat */
-	stopTalking() {
+	async stopTalking() {
 		if (!this.packetManager.config) {
 			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
 
-		return this.packetManager.socketPacketManager.stopTalking();
+		return await this.packetManager.socketPacketManager.stopTalking();
 	}
 
 	/** A method that checks if audio is being sent at the moment */
