@@ -114,10 +114,7 @@ export default class SocketPacketManager {
 	}
 
 	async connect(host: string, port: number, socketSecret: UUID) {
-		log.info(
-			`Connecting to socket ${host}:${port} with secret `,
-			socketSecret,
-		);
+		log.info(`Connecting to socket ${host}:${port}`);
 
 		// Save data
 		this.host = host;
