@@ -50,6 +50,10 @@ export default class SocketPacketManager {
 			port: this.port!,
 		};
 
+		if (this.pingPacket) this.pingPacket.cleanup();
+		if (this.sourceAudioPacket) this.sourceAudioPacket.cleanup();
+		if (this.playerAudioPacket) this.playerAudioPacket.cleanup();
+
 		// Socket packets
 		this.pingPacket = new PingPacket(
 			socket,

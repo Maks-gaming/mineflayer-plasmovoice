@@ -51,6 +51,10 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 		});
 	}
 
+	public cleanup() {
+		this.callbacks = []
+	}
+
 	public async send(data: T): Promise<void> {
 		if (this.id != "PingPacket") {
 			log.debug("(Socket) <=", this.id);
