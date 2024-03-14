@@ -41,6 +41,13 @@ export default class SocketPacketManager {
 			log.fatal(new Error(`Failed to connect to UDP server: ${err}`));
 			process.exit();
 		});
+
+		process.on("SIGINT", () => {
+			try {
+				if (this.socketClient) this.socketClient.close();
+				this.socketClient = undefined;
+			} catch {}
+		});
 	}
 
 	private initializePackets() {
