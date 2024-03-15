@@ -24,9 +24,14 @@ export default class PlasmoVoice {
 		return await this.packetManager.socketPacketManager.stopTalking();
 	}
 
+	/** The belief that plasovoice is up and running */
+	isWorking(): boolean {
+		return this.packetManager.config !== undefined;
+	}
+
 	/** A method that checks if audio is being sent at the moment */
 	isTalking() {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
@@ -44,34 +49,34 @@ export default class PlasmoVoice {
 
 	/** Returns a list of Activations (channels where the plugin can send an audio stream) */
 	getActivations(): string[] {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return [];
 		}
 
-		return this.packetManager.config.activations.map((item) => item.name);
+		return this.packetManager.config!.activations.map((item) => item.name);
 	}
 
 	/** Returns the sampling rate of all sounds. By default it is `48_000` Hz */
 	getSampleRate(): number {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return -1;
 		}
 
-		return this.packetManager.config.captureInfo.sampleRate;
+		return this.packetManager.config!.captureInfo.sampleRate;
 	}
 
 	/** Returns the default distance around the player
 	 * @argument activation by default is "proximity"
 	 */
 	getDefaultDistance(activation?: string | undefined) {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return -1;
 		}
 
-		const activationData = this.packetManager.config.activations.find(
+		const activationData = this.packetManager.config!.activations.find(
 			(value) => value.name === activation ?? "proximity",
 		)!;
 
@@ -82,12 +87,12 @@ export default class PlasmoVoice {
 	 * @argument activation by default is "proximity"
 	 */
 	getAllowedDistances(activation?: string | undefined) {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return [];
 		}
 
-		const activationData = this.packetManager.config.activations.find(
+		const activationData = this.packetManager.config!.activations.find(
 			(value) => value.name === activation ?? "proximity",
 		)!;
 
@@ -99,7 +104,7 @@ export default class PlasmoVoice {
 		distance?: number | undefined,
 		activation?: string | undefined,
 	) {
-		if (!this.packetManager.config) {
+		if (!this.isWorking()) {
 			log.error(new Error("Voice chat is not launched!"));
 			return;
 		}
