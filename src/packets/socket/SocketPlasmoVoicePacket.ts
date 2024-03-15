@@ -52,7 +52,7 @@ export default abstract class SocketPlasmoVoicePacket<T extends object> {
 	}
 
 	public cleanup() {
-		this.callbacks = []
+		this.callbacks = [];
 	}
 
 	public async send(data: T): Promise<void> {

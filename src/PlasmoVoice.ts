@@ -52,6 +52,16 @@ export default class PlasmoVoice {
 		return this.packetManager.config.activations.map((item) => item.name);
 	}
 
+	/** Returns the sampling rate of all sounds. By default it is `48_000` Hz */
+	getSampleRate(): number {
+		if (!this.packetManager.config) {
+			log.error(new Error("Voice chat is not launched!"));
+			return -1;
+		}
+
+		return this.packetManager.config.captureInfo.sampleRate;
+	}
+
 	/** Returns the default distance around the player
 	 * @argument activation by default is "proximity"
 	 */
