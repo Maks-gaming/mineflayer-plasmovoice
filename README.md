@@ -48,6 +48,8 @@ plasmo.setLoggingLevel(0)
 
 #### Listening players
 > An example of an event when some player is talking
+- Data format is `pcm_s16le` (waveform)
+- Sequence number goes in order from the number `1`, some packet **may be skipped** when using the UDP protocol
 ```js
 bot.on("plasmovoice_voice", (data) => {
     /*{
