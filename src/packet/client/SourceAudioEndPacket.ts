@@ -1,7 +1,7 @@
 import { Bot } from "mineflayer";
-import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
+import PacketClientBase from "./ClientPacketBase";
 
-export default class SourceAudioEndPacket extends ClientPlasmoVoicePacket<{
+export default class SourceAudioEndPacket extends PacketClientBase<{
 	sourceId: UUID;
 	sequenceNumber: BigInt;
 }> {

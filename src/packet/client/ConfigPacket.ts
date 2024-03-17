@@ -1,5 +1,5 @@
 import { Bot } from "mineflayer";
-import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
+import PacketClientBase from "./ClientPacketBase";
 
 export type ConfigPacketData = {
 	serverId: UUID;
@@ -42,7 +42,7 @@ export type ConfigPacketData = {
 	}[];
 };
 
-export default class ConfigPacket extends ClientPlasmoVoicePacket<ConfigPacketData> {
+export default class ConfigPacket extends PacketClientBase<ConfigPacketData> {
 	constructor(bot: Bot) {
 		super(bot, "ConfigPacket");
 	}

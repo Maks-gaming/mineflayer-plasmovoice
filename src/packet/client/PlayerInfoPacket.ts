@@ -1,5 +1,5 @@
 import { Bot } from "mineflayer";
-import ClientPlasmoVoicePacket from "./ClientPlasmoVoicePacket";
+import PacketClientBase from "./ClientPacketBase";
 
 export type PlayerInfoPacketData = {
 	voiceDisabled: boolean;
@@ -8,7 +8,7 @@ export type PlayerInfoPacketData = {
 	version: string;
 	publicKey: Buffer;
 };
-export default class PlayerInfoPacket extends ClientPlasmoVoicePacket<PlayerInfoPacketData> {
+export default class PlayerInfoPacket extends PacketClientBase<PlayerInfoPacketData> {
 	constructor(bot: Bot) {
 		super(bot, "PlayerInfoPacket");
 	}

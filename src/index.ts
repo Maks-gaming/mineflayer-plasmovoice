@@ -1,5 +1,5 @@
 import { Bot } from "mineflayer";
-import PlasmoVoice, { log } from "./PlasmoVoice";
+import PlasmoVoice, { log } from "./lib";
 
 /** The function for changing the logging level, by default - 4, and these are warnings, errors and fatal */
 export function setLoggingLevel(level: number = 4) {
@@ -10,7 +10,7 @@ export function plugin(bot: Bot) {
 	bot.plasmovoice = new PlasmoVoice(bot);
 }
 
-export * from "./PlasmoVoice";
+export * from "./lib";
 
 export default plugin;
 
