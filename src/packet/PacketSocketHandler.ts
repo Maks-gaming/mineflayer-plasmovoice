@@ -29,15 +29,15 @@ export default class PacketSocketHandler {
 		this.packetEncoder = new PacketSocketEncoder(this.core);
 	}
 
-	connect(ip: string, port: number, secret: UUID) {
+	connect(ip: string, port: number | undefined, secret: UUID) {
 		this.ip =
 			ip == "0.0.0.0" ? (this.core.bot._client.socket as any)._host : ip;
-		this.port = port;
+		this.port = port ?? this.core.bot._client.socket.remotePort;
 		this.secret = secret;
 
 		this.socket = dgram.createSocket("udp4");
 
-		this.socket.connect(port, ip, () => {
+		this.socket.connect(port!, ip, () => {
 			log.getSubLogger({ name: "Socket" }).debug(
 				"Connected to the socket",
 			);
