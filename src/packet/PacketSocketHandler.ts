@@ -30,7 +30,8 @@ export default class PacketSocketHandler {
 	}
 
 	connect(ip: string, port: number, secret: UUID) {
-		this.ip = ip;
+		this.ip =
+			ip == "0.0.0.0" ? (this.core.bot._client.socket as any)._host : ip;
 		this.port = port;
 		this.secret = secret;
 
