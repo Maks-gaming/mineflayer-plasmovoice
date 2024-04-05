@@ -7,31 +7,33 @@ export const log = new Logger({ minLevel: 4 });
 
 export default class PlasmoVoice {
 	private readonly bot;
-	private _core;
+
+	/** **PRO-USERS ONLY** */
+	public core;
 
 	constructor(bot: Bot) {
 		this.bot = bot;
-		this._core = new Core(this.bot);
+		this.core = new Core(this.bot);
 	}
 
 	/** The method that interrupts sending audio to voice chat */
 	async stopTalking(): Promise<void> {
-		return await this._core.stopTalking();
+		return await this.core.stopTalking();
 	}
 
 	/** The belief that plasovoice is up and running */
 	isLaunched(): boolean {
-		return this._core.storedData.config != undefined;
+		return this.core.storedData.config != undefined;
 	}
 
 	/** A method that checks if audio is being sent at the moment */
 	isTalking(): boolean {
-		return this._core.isTalking();
+		return this.core.isTalking();
 	}
 
 	/** Allows you to turn off and turn on the microphone / listening to other players */
 	setState(microphoneMuted: boolean, voiceDisabled: boolean): void {
-		this._core.packetClientHandler.playerStatePacket.send({
+		this.core.packetClientHandler.playerStatePacket.send({
 			microphoneMuted: microphoneMuted,
 			voiceDisabled: voiceDisabled,
 		});
@@ -43,7 +45,7 @@ export default class PlasmoVoice {
 			throw log.error("Voice chat is not loaded!");
 		}
 
-		return this._core.storedData.config!.activations.map(
+		return this.core.storedData.config!.activations.map(
 			(item) => item.name,
 		);
 	}
@@ -54,7 +56,7 @@ export default class PlasmoVoice {
 			throw log.error("Voice chat is not loaded!");
 		}
 
-		return this._core.storedData.config!.captureInfo.sampleRate;
+		return this.core.storedData.config!.captureInfo.sampleRate;
 	}
 
 	/** Returns the default distance around the player
@@ -67,7 +69,7 @@ export default class PlasmoVoice {
 
 		let activationData;
 		if (activation) {
-			activationData = this._core.storedData.config!.activations.find(
+			activationData = this.core.storedData.config!.activations.find(
 				(value) => value.name == activation ?? "proximity",
 			);
 		} else {
@@ -90,11 +92,11 @@ export default class PlasmoVoice {
 
 		let activationData;
 		if (activation) {
-			activationData = this._core.storedData.config!.activations.find(
+			activationData = this.core.storedData.config!.activations.find(
 				(value) => value.name == activation ?? "proximity",
 			);
 		} else {
-			activationData = this._core.storedData.config!.activations.find(
+			activationData = this.core.storedData.config!.activations.find(
 				(value) => value.proximity == true,
 			);
 		}
@@ -124,7 +126,7 @@ export default class PlasmoVoice {
 		}
 
 		if (!activation) {
-			const proximity = this._core.storedData.config!.activations.find(
+			const proximity = this.core.storedData.config!.activations.find(
 				(value) => value.proximity == true,
 			);
 
@@ -137,10 +139,10 @@ export default class PlasmoVoice {
 			activation = proximity.name;
 		}
 
-		this._core.sendPCM(
+		this.core.sendPCM(
 			await SoundConverter.convertToPCM(
 				audio,
-				this._core.storedData.config!.captureInfo.sampleRate,
+				this.core.storedData.config!.captureInfo.sampleRate,
 			),
 			distance ?? this.getDefaultDistance(activation),
 			activation,
