@@ -1,5 +1,6 @@
 import { OpusEncoder } from "@discordjs/opus";
 import crypto from "crypto";
+import NodeRSA from "node-rsa";
 import Core from "../Core";
 
 const UDP_MAGIC_NUMBER = 1318061289;
@@ -8,6 +9,7 @@ export default class PacketSocketEncoder {
 	private readonly core;
 	private aesKey: Buffer | undefined;
 	private opusEncoder: OpusEncoder | undefined;
+	private rsaDecoder: NodeRSA | undefined;
 
 	constructor(core: Core) {
 		this.core = core;
@@ -17,11 +19,18 @@ export default class PacketSocketEncoder {
 		if (!this.core.storedData.config)
 			throw new Error("Config is not received");
 
-		this.aesKey = crypto.privateDecrypt(
+		this.rsaDecoder = new NodeRSA(
+			this.core.storedData.keyPair.privateKey,
+			"private",
 			{
-				key: this.core.storedData.keyPair.privateKey,
-				padding: crypto.constants.RSA_PKCS1_PADDING,
+				encryptionScheme: "pkcs1",
 			},
+		);
+
+		// By default it will use the node crypto library with the CVE
+		this.rsaDecoder.setOptions({ environment: "browser" });
+
+		this.aesKey = this.rsaDecoder.decrypt(
 			this.core.storedData.config.encryptionInfo.data,
 		);
 

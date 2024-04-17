@@ -12,7 +12,10 @@ export function plugin(bot: Bot) {
 
 export * from "./lib";
 
-export default plugin;
+export default {
+	plugin,
+	setLoggingLevel,
+};
 
 declare module "mineflayer" {
 	interface Bot {

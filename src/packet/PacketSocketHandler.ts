@@ -29,7 +29,7 @@ export default class PacketSocketHandler {
 		this.packetEncoder = new PacketSocketEncoder(this.core);
 	}
 
-	connect(ip: string, port: number | undefined, secret: UUID) {
+	connect(ip: string, port: number, secret: UUID) {
 		this.ip =
 			ip == "0.0.0.0" ? (this.core.bot._client.socket as any)._host : ip;
 		this.port = port ?? this.core.bot._client.socket.remotePort;
@@ -47,6 +47,10 @@ export default class PacketSocketHandler {
 			this.pingPacket!.send({
 				currentTime: BigInt(Date.now()),
 			});
+		});
+
+		this.socket.on("error", (err) => {
+			log.fatal(`Socket error: ${err.message}`);
 		});
 	}
 

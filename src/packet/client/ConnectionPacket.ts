@@ -4,7 +4,7 @@ import PacketClientBase from "./ClientPacketBase";
 export type ConnectionPacketData = {
 	secret: UUID;
 	ip: string;
-	port: number | undefined;
+	port: number;
 };
 export default class ConnectionPacket extends PacketClientBase<ConnectionPacketData> {
 	constructor(bot: Bot) {
