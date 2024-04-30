@@ -31,7 +31,10 @@ export default class PacketSocketHandler {
 
 	connect(ip: string, port: number, secret: UUID) {
 		this.ip =
-			ip == "0.0.0.0" ? (this.core.bot._client.socket as any)._host : ip;
+			ip == "0.0.0.0"
+				? (this.core.bot._client.socket as any)._host ??
+					this.core.bot._client.socket.remoteAddress
+				: ip;
 		this.port = port ?? this.core.bot._client.socket.remotePort;
 		this.secret = secret;
 
