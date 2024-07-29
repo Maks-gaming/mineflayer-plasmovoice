@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"@types/fluent-ffmpeg": "^2.1.21",
-		"@types/node": "^20.0.0",
+		"@types/node": "^22.0.0",
 		"@types/node-rsa": "^1.1.4",
 		"prettier-plugin-organize-imports": "^3.2.4",
 		"require-self": "^0.2.3",
