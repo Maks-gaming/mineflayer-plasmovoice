@@ -36,13 +36,13 @@ export default class PacketSocketBase<T extends Object> extends EventEmitter {
 			this.packetId,
 		);
 
-		log.getSubLogger({ name: "Socket" }).debug(`SEND ${this.packetId}`);
+		log.getSubLogger({ name: "Socket" }).debug(
+			`SEND ${this.packetId} (${this.core.packetSocketHandler.ip}:${this.core.packetSocketHandler.port})`,
+		);
 		log.getSubLogger({ name: "Socket" }).silly(data);
 
-		this.core.packetSocketHandler.socket!.send(
-			buffer,
-			this.core.packetSocketHandler.port,
-			this.core.packetSocketHandler.ip,
-		);
+		this.core.packetSocketHandler.socket!.send(buffer, (err) => {
+			log.getSubLogger({ name: "Socket" }).fatal(err);
+		});
 	}
 }

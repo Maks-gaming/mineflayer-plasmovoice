@@ -70,7 +70,7 @@ export default class PlasmoVoice {
 		let activationData;
 		if (activation) {
 			activationData = this.core.storedData.config!.activations.find(
-				(value) => value.name == activation ?? "proximity",
+				(value) => value.name == (activation ?? "proximity"),
 			);
 		} else {
 		}
@@ -93,7 +93,7 @@ export default class PlasmoVoice {
 		let activationData;
 		if (activation) {
 			activationData = this.core.storedData.config!.activations.find(
-				(value) => value.name == activation ?? "proximity",
+				(value) => value.name == (activation ?? "proximity"),
 			);
 		} else {
 			activationData = this.core.storedData.config!.activations.find(

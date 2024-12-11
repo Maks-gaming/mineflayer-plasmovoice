@@ -51,7 +51,7 @@ export default class PacketClientHandler {
 				voiceDisabled: false,
 				microphoneMuted: false,
 				minecraftVersion: this.core.bot.version,
-				version: "2.0.8",
+				version: "2.1.2",
 				publicKey: this.core.storedData.keyPair.publicKey,
 			});
 		});

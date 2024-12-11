@@ -754,8 +754,17 @@ export default {
 						name: "currentTime",
 						type: "long",
 					},
+					{
+						name: "serverIp",
+						type: "string",
+					},
+					{
+						name: "serverPort",
+						type: "short",
+					},
 				],
 			],
+
 			plasmovoiceudp_PlayerAudioPacket: [
 				"container",
 				[
@@ -912,4 +921,4 @@ export default {
 			],
 		},
 	},
-};
+} as unknown as Protocol;

@@ -32,24 +32,31 @@ export default class PacketSocketHandler {
 	connect(ip: string, port: number, secret: UUID) {
 		this.ip =
 			ip == "0.0.0.0"
-				? (this.core.bot._client.socket as any)._host ??
-					this.core.bot._client.socket.remoteAddress
+				? ((this.core.bot._client.socket as any)._host ??
+					this.core.bot._client.socket.remoteAddress)
 				: ip;
-		this.port = port ?? this.core.bot._client.socket.remotePort;
+		this.port = port ?? this.core.bot._client.socket.remotePort ?? 25565;
 		this.secret = secret;
 
 		this.socket = dgram.createSocket("udp4");
 
-		this.socket.connect(port!, ip, () => {
+		this.socket.connect(this.port!, this.ip!, () => {
 			log.getSubLogger({ name: "Socket" }).debug(
 				"Connected to the socket",
 			);
 
 			this.setupPackets();
 
+			log.getSubLogger({ name: "Socket" }).fatal(this.ip, this.port);
 			this.pingPacket!.send({
 				currentTime: BigInt(Date.now()),
+				serverIp: this.ip!,
+				serverPort: this.port!,
 			});
+		});
+
+		this.socket.on("close", () => {
+			log.warn(`Socket closed`);
 		});
 
 		this.socket.on("error", (err) => {
@@ -67,6 +74,8 @@ export default class PacketSocketHandler {
 		this.pingPacket.on("packet", () => {
 			this.pingPacket!.send({
 				currentTime: BigInt(Date.now()),
+				serverIp: this.ip!,
+				serverPort: this.port!,
 			});
 		});
 
