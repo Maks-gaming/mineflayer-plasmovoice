@@ -47,7 +47,6 @@ export default class PacketSocketHandler {
 
 			this.setupPackets();
 
-			log.getSubLogger({ name: "Socket" }).fatal(this.ip, this.port);
 			this.pingPacket!.send({
 				currentTime: BigInt(Date.now()),
 				serverIp: this.ip!,
@@ -74,8 +73,6 @@ export default class PacketSocketHandler {
 		this.pingPacket.on("packet", () => {
 			this.pingPacket!.send({
 				currentTime: BigInt(Date.now()),
-				serverIp: this.ip!,
-				serverPort: this.port!,
 			});
 		});
 

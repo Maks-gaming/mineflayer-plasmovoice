@@ -45,7 +45,7 @@ export default class PlasmoVoice {
 			throw log.error("Voice chat is not loaded!");
 		}
 
-		return this.core.storedData.config!.activations.map(
+		return Array.from(this.core.storedData.config!.activations).map(
 			(item) => item.name,
 		);
 	}
@@ -69,9 +69,9 @@ export default class PlasmoVoice {
 
 		let activationData;
 		if (activation) {
-			activationData = this.core.storedData.config!.activations.find(
-				(value) => value.name == (activation ?? "proximity"),
-			);
+			activationData = Array.from(
+				this.core.storedData.config!.activations,
+			).find((value) => value.name == (activation ?? "proximity"));
 		} else {
 		}
 
@@ -92,13 +92,13 @@ export default class PlasmoVoice {
 
 		let activationData;
 		if (activation) {
-			activationData = this.core.storedData.config!.activations.find(
-				(value) => value.name == (activation ?? "proximity"),
-			);
+			activationData = Array.from(
+				this.core.storedData.config!.activations,
+			).find((value) => value.name == (activation ?? "proximity"));
 		} else {
-			activationData = this.core.storedData.config!.activations.find(
-				(value) => value.proximity == true,
-			);
+			activationData = Array.from(
+				this.core.storedData.config!.activations,
+			).find((value) => value.proximity == true);
 		}
 
 		if (!activationData) {
@@ -126,9 +126,9 @@ export default class PlasmoVoice {
 		}
 
 		if (!activation) {
-			const proximity = this.core.storedData.config!.activations.find(
-				(value) => value.proximity == true,
-			);
+			const proximity = Array.from(
+				this.core.storedData.config!.activations,
+			).find((value) => value.proximity == true);
 
 			if (!proximity) {
 				throw log.fatal(

@@ -3,8 +3,6 @@ import crypto from "crypto";
 import NodeRSA from "node-rsa";
 import Core from "../Core";
 
-const UDP_MAGIC_NUMBER = 1318061289;
-
 export default class PacketSocketEncoder {
 	private readonly core;
 	private aesKey: Buffer | undefined;
@@ -31,7 +29,7 @@ export default class PacketSocketEncoder {
 		this.rsaDecoder.setOptions({ environment: "browser" });
 
 		this.aesKey = this.rsaDecoder.decrypt(
-			this.core.storedData.config.encryptionInfo.data,
+			Buffer.from(this.core.storedData.config.encryptionInfo!.data),
 		);
 
 		this.opusEncoder = new OpusEncoder(
@@ -50,24 +48,6 @@ export default class PacketSocketEncoder {
 		if (!this.opusEncoder) throw new Error("Not initialized");
 
 		return this.opusEncoder.decode(buffer);
-	}
-
-	encodeSocket(data: object, packetId: string): Buffer {
-		if (!this.core.packetSocketHandler.secret)
-			throw new Error("Secret key is not set");
-
-		let out =
-			this.core.packetClientHandler.packetEncoder.protoDef.createPacketBuffer(
-				"plasmovoiceudp_packet",
-				{
-					id: packetId,
-					secret: this.core.packetSocketHandler.secret,
-					currentTime: BigInt(Date.now()),
-					magic_number: UDP_MAGIC_NUMBER,
-					data: data,
-				},
-			);
-		return out;
 	}
 
 	encryptOpus(data: Buffer): Buffer {

@@ -1,4 +1,5 @@
 import { Bot } from "mineflayer";
+import ByteArrayDataOutput from "../../data/encoder/ByteArrayDataOutput";
 import PacketClientBase from "./ClientPacketBase";
 
 export type PlayerStatePacketData = {
@@ -7,6 +8,19 @@ export type PlayerStatePacketData = {
 };
 export default class PlayerStatePacket extends PacketClientBase<PlayerStatePacketData> {
 	constructor(bot: Bot) {
-		super(bot, "PlayerStatePacket");
+		super(bot, 11, "PlayerStatePacket");
+	}
+
+	public deserialize(): PlayerStatePacketData {
+		throw "Not required for client-side";
+	}
+
+	public serialize(data: PlayerStatePacketData): ByteArrayDataOutput {
+		const output = new ByteArrayDataOutput();
+
+		output.writeBoolean(data.voiceDisabled);
+		output.writeBoolean(data.microphoneMuted);
+
+		return output;
 	}
 }

@@ -6,7 +6,7 @@
 - 🔈 Allows to send any soundfile formats using **FFMPEG**
 - 🔒 Works with **AES-128-CBC** and **RSA** Encryption
 - 👀 Almost exactly mimics the behavior of the original mod
-- 🖧 Using **ProtoDef** to assemble the packets
+- 🖧 Using java-like buffers to assemble the packets
 - 📎 Supports "**/vrc**" command
 - ↗ Automatically reconnects in case of connection loss
 
@@ -80,7 +80,7 @@ This project uses the [MIT](https://github.com/Maks-gaming/mineflayer-plasmovoic
 
 # Contributors:
 - ↗ Maks-gaming - The idea and implementation of the plugin structure;
-- 📎 CralixRaev - Helped to deal with **ProtoDef**;
+- 📎 CralixRaev - Helped to deal with packet system;
 - 🔥 Plasmo R&D - helped to understand some things in the packet system;
 
 > This project is accepting PRs and Issues. See something you think can be improved? Go for it! Any and all help is highly appreciated!

@@ -51,7 +51,7 @@ export default class PacketClientHandler {
 				voiceDisabled: false,
 				microphoneMuted: false,
 				minecraftVersion: this.core.bot.version,
-				version: "2.1.2",
+				version: "2.0.0",
 				publicKey: this.core.storedData.keyPair.publicKey,
 			});
 		});
@@ -75,12 +75,12 @@ export default class PacketClientHandler {
 			}
 
 			if (
-				this.core.storedData.config!.encryptionInfo.algorithm !=
+				this.core.storedData.config!.encryptionInfo!.algorithm !=
 				"AES/CBC/PKCS5Padding"
 			) {
 				log.fatal(
 					new Error(
-						`Unsupported encryption type "${this.core.storedData.config!.encryptionInfo.algorithm}"`,
+						`Unsupported encryption type "${this.core.storedData.config!.encryptionInfo!.algorithm}"`,
 					),
 				);
 				return;
