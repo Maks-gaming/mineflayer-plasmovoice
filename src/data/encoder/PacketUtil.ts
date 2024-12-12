@@ -5,7 +5,7 @@ export default class PacketUtil {
 	static readUUID(packet: ByteArrayDataInput): UUID {
 		return {
 			mostSignificantBits: packet.readLong(),
-			lessSignificantBits: packet.readLong(),
+			leastSignificantBits: packet.readLong(),
 		};
 	}
 
@@ -14,7 +14,7 @@ export default class PacketUtil {
 		uuid: UUID,
 	): ByteArrayDataOutput {
 		packet.writeLong(uuid.mostSignificantBits);
-		packet.writeLong(uuid.lessSignificantBits);
+		packet.writeLong(uuid.leastSignificantBits);
 		return packet;
 	}
 

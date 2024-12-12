@@ -76,7 +76,7 @@ export default class Utils {
 				(BigInt(parts[0]) << 32n) |
 				(BigInt(parts[1]) << 16n) |
 				BigInt(parts[2]),
-			lessSignificantBits: (BigInt(parts[3]) << 48n) | BigInt(parts[4]),
+			leastSignificantBits: (BigInt(parts[3]) << 48n) | BigInt(parts[4]),
 		};
 	}
 
