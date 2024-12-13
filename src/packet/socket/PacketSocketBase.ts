@@ -5,7 +5,8 @@ import ByteArrayDataOutput from "../../data/encoder/ByteArrayDataOutput";
 import PacketUtil from "../../data/encoder/PacketUtil";
 import { log } from "../../lib";
 
-const UDP_MAGIC_NUMBER = 1318061289;
+// magic number is used to filter packets received not from PV
+const UDP_MAGIC_NUMBER = 0x4e9004e9;
 export default abstract class PacketSocketBase<
 	T extends Object,
 > extends EventEmitter {
@@ -28,6 +29,8 @@ export default abstract class PacketSocketBase<
 			const buf = new ByteArrayDataInput(new Uint8Array(msg));
 
 			const magic_number = buf.readInt();
+			if (magic_number != UDP_MAGIC_NUMBER) return;
+
 			const index = buf.readByte();
 			if (this.index != index) return;
 
