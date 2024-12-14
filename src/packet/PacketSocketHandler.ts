@@ -41,19 +41,23 @@ export default class PacketSocketHandler {
 		this.socket = dgram.createSocket("udp4");
 
 		this.socket.on("connect", () => {
-			this.socket!.send("Hello, world!");
-
 			log.getSubLogger({ name: "Socket" }).debug(
 				"Connected to the socket",
 			);
 
 			this.setupPackets();
 
-			this.pingPacket!.send({
-				currentTime: BigInt(Date.now()),
-				serverIp: this.ip!,
-				serverPort: this.port!,
-			});
+			const connector = setInterval(() => {
+				if (this.core.storedData.config === undefined) {
+					this.pingPacket!.send({
+						currentTime: BigInt(Date.now()),
+						serverIp: this.ip!,
+						serverPort: this.port!,
+					});
+				} else {
+					clearInterval(connector);
+				}
+			}, 3000);
 		});
 
 		this.socket.on("close", () => {
