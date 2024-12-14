@@ -57,7 +57,7 @@ export default class PacketSocketHandler {
 				} else {
 					clearInterval(connector);
 				}
-			}, 3000);
+			}, 500);
 		});
 
 		this.socket.on("close", () => {
